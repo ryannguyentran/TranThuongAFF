@@ -1,0 +1,6 @@
+{
+  "name": "TranThuong – Săn Deal Shopee Chính Hãng",
+  "description": "Website TranThuong tổng hợp deal ngon, mã giảm giá và sản phẩm chính hãng Shopee Mall. Chọn lọc deal thật, an tâm mua sắm.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
