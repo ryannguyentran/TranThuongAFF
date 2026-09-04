@@ -9,6 +9,8 @@ import {
   CheckCircle2,
   RotateCcw,
   ExternalLink,
+  Lock,
+  LogOut,
 } from 'lucide-react';
 import { Product } from '../types';
 import { convertToExportCSVUrl, parseProductsCSV } from '../utils/csvParser';
@@ -20,6 +22,7 @@ interface SyncSheetModalProps {
   onUpdateProducts: (newProducts: Product[]) => void;
   savedSheetUrl: string;
   onSaveSheetUrl: (url: string) => void;
+  onLogoutAdmin?: () => void;
 }
 
 export const SyncSheetModal: React.FC<SyncSheetModalProps> = ({
@@ -28,6 +31,7 @@ export const SyncSheetModal: React.FC<SyncSheetModalProps> = ({
   onUpdateProducts,
   savedSheetUrl,
   onSaveSheetUrl,
+  onLogoutAdmin,
 }) => {
   const [sheetUrl, setSheetUrl] = useState(savedSheetUrl);
   const [pastedCSV, setPastedCSV] = useState('');
@@ -111,11 +115,11 @@ export const SyncSheetModal: React.FC<SyncSheetModalProps> = ({
   };
 
   const handleResetDefault = () => {
-    if (confirm('Bạn có chắc muốn khôi phục về danh sách 4 sản phẩm mặc định ban đầu không?')) {
+    if (confirm('Bạn có chắc muốn khôi phục về danh sách sản phẩm mặc định ban đầu không?')) {
       onUpdateProducts(PRODUCTS);
       setStatusMessage({
         type: 'success',
-        text: 'Đã khôi phục về danh sách sản phẩm mặc định ban đầu!',
+        text: 'Đã khôi phục về danh sách 9 sản phẩm mặc định ban đầu!',
       });
     }
   };
@@ -133,20 +137,41 @@ export const SyncSheetModal: React.FC<SyncSheetModalProps> = ({
               <FileSpreadsheet className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-neutral-900">
-                Tự Động Cập Nhật Sản Phẩm & Nhóm Deal
-              </h2>
+              <div className="flex items-center gap-2">
+                <h2 className="text-lg font-bold text-neutral-900">
+                  Cập Nhật Sản Phẩm & Cataloge
+                </h2>
+                <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md">
+                  <Lock className="w-3 h-3 text-emerald-600" />
+                  <span>Quản trị viên</span>
+                </span>
+              </div>
               <p className="text-xs text-neutral-500">
-                Đồng bộ nhanh từ Google Sheet hoặc dán trực tiếp bảng CSV
+                Đồng bộ bảo mật từ Google Sheet hoặc dán trực tiếp bảng CSV
               </p>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="p-2 text-neutral-400 hover:text-neutral-700 hover:bg-neutral-200/60 rounded-xl transition-colors cursor-pointer"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-2">
+            {onLogoutAdmin && (
+              <button
+                onClick={() => {
+                  onLogoutAdmin();
+                  onClose();
+                }}
+                className="flex items-center gap-1 text-xs font-semibold text-neutral-500 hover:text-red-600 hover:bg-red-50 px-2.5 py-1.5 rounded-lg border border-neutral-200 hover:border-red-200 transition-colors cursor-pointer"
+                title="Khóa lại và đăng xuất quyền quản trị"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                <span>Khóa / Đăng xuất</span>
+              </button>
+            )}
+            <button
+              onClick={onClose}
+              className="p-2 text-neutral-400 hover:text-neutral-700 hover:bg-neutral-200/60 rounded-xl transition-colors cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* Tab switch */}
@@ -232,8 +257,8 @@ export const SyncSheetModal: React.FC<SyncSheetModalProps> = ({
                 <ol className="list-decimal list-inside space-y-1 pl-1 text-neutral-600">
                   <li>
                     Trên Google Sheet của bạn, các cột lần lượt là: <br />
-                    <code className="bg-neutral-200 px-1 py-0.5 rounded font-mono text-neutral-800">
-                      STT, Tên Sản Phẩm, Ghi chú, Cataloge, Link Shopee, Hình ảnh sản phẩm
+                    <code className="bg-neutral-200 px-1.5 py-0.5 rounded font-mono text-neutral-800 text-[11px]">
+                      STT, Tên Sản Phẩm, Ghi chú, Cataloge Chính, Cataloge Phụ, Link Shopee, Hình ảnh sản phẩm
                     </code>
                   </li>
                   <li>
@@ -258,7 +283,7 @@ export const SyncSheetModal: React.FC<SyncSheetModalProps> = ({
                   rows={8}
                   value={pastedCSV}
                   onChange={(e) => setPastedCSV(e.target.value)}
-                  placeholder={`STT,Tên Sản Phẩm,Ghi chú,Cataloge,Link Shopee,Hình ảnh sản phẩm\n1,Khay nhựa chữ nhật trong suốt,Chọn mã 04...,Minio Green - VF2,https://s.shopee.vn/AKaJleFrop,https://i.postimg.cc/...\n2,Essager - Bộ chuyển đổi Bluetooth...,Chuyển tần số FM...,Minio Green - VF2,https://s.shopee.vn/...,https://i.postimg.cc/...`}
+                  placeholder={`STT,Tên Sản Phẩm,Ghi chú,Cataloge Chính,Cataloge Phụ,Link Shopee,Hình ảnh sản phẩm\n1,Khay nhựa chữ nhật trong suốt,Chọn mã 04...,Xe Hơi - Ô tô,Minio Green - VF2,https://s.shopee.vn/AKaJleFrop,https://i.postimg.cc/...\n5,Bình giữ nhiệt LATINVIA316 800ml,Bình này giữ nhiệt ok...,Gia Dụng,,https://s.shopee.vn/...,https://i.postimg.cc/...\n6,Thảm Sàn Xe Feliz 2...,,Xe Máy,Feliz,https://s.shopee.vn/...,https://i.postimg.cc/...`}
                   className="w-full p-3 text-xs font-mono bg-white border border-neutral-300 rounded-xl focus:outline-none focus:border-[#EE4D2D] focus:ring-2 focus:ring-[#EE4D2D]/20 transition-all leading-relaxed"
                 />
               </div>

@@ -4,17 +4,25 @@ export interface Product {
   id: string;
   name: string;
   category: string;
+  mainCategory: string;
+  subCategory?: string;
   image: string;
-  originalPrice: number;
-  salePrice: number;
-  badge: DealBadge;
-  isMall: boolean;
-  rating: number;
-  soldCount: string;
+  originalPrice?: number;
+  salePrice?: number;
+  badge?: DealBadge;
+  isMall?: boolean;
+  rating?: number;
+  soldCount?: string;
   affiliateUrl: string;
   voucherTag?: string;
   description?: string;
   note?: string;
+}
+
+export interface SubCategoryItem {
+  id: string;
+  name: string;
+  count: number;
 }
 
 export interface CategoryItem {
@@ -23,6 +31,7 @@ export interface CategoryItem {
   icon: string;
   description: string;
   count?: number;
+  subCategories?: SubCategoryItem[];
 }
 
 export interface SiteConfig {

@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Filter, SlidersHorizontal, Sparkles, X, AlertCircle } from 'lucide-react';
-import { Product, CategoryItem } from '../types';
+import { Search, Sparkles, X, AlertCircle, Layers, Tag, ChevronRight } from 'lucide-react';
+import { Product, CategoryItem, SubCategoryItem } from '../types';
 import { CATEGORIES } from '../data/affiliateData';
 import { ProductCard } from './ProductCard';
 
@@ -8,7 +8,9 @@ interface CatalogSectionProps {
   products: Product[];
   categories?: CategoryItem[];
   selectedCategory: string;
+  selectedSubCategory: string;
   onSelectCategory: (catId: string) => void;
+  onSelectSubCategory: (subCatId: string, mainCatId?: string) => void;
 }
 
 type SortOption = 'default' | 'name-asc' | 'name-desc';
@@ -17,26 +19,60 @@ export const CatalogSection: React.FC<CatalogSectionProps> = ({
   products,
   categories = CATEGORIES,
   selectedCategory,
+  selectedSubCategory,
   onSelectCategory,
+  onSelectSubCategory,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOption, setSortOption] = useState<SortOption>('default');
+
+  // Compute available subcategories based on the current main category selection
+  const availableSubCategories = useMemo<SubCategoryItem[]>(() => {
+    if (selectedCategory === 'all') {
+      // Collect unique subcategories across all products
+      const subMap = new Map<string, number>();
+      products.forEach((p) => {
+        if (p.subCategory) {
+          subMap.set(p.subCategory, (subMap.get(p.subCategory) || 0) + 1);
+        }
+      });
+      const list: SubCategoryItem[] = [];
+      subMap.forEach((count, name) => {
+        list.push({ id: name, name, count });
+      });
+      return list;
+    }
+
+    const currentCat = categories.find((c) => c.id === selectedCategory);
+    return currentCat?.subCategories || [];
+  }, [products, categories, selectedCategory]);
 
   // Filter and sort products
   const filteredProducts = useMemo(() => {
     return products
       .filter((p) => {
-        // Category filter
-        if (selectedCategory !== 'all' && p.category !== selectedCategory) {
-          return false;
+        // Main Category filter
+        if (selectedCategory !== 'all') {
+          const matchMain = p.mainCategory === selectedCategory || p.category === selectedCategory || p.category?.startsWith(selectedCategory);
+          if (!matchMain) return false;
         }
+
+        // Subcategory filter
+        if (selectedSubCategory !== 'all') {
+          if (p.subCategory !== selectedSubCategory) {
+            return false;
+          }
+        }
+
         // Search query
         if (searchQuery.trim()) {
           const q = searchQuery.toLowerCase().trim();
           const matchName = p.name.toLowerCase().includes(q);
           const matchDesc = p.description?.toLowerCase().includes(q);
           const matchNote = p.note?.toLowerCase().includes(q);
-          if (!matchName && !matchDesc && !matchNote) return false;
+          const matchMain = p.mainCategory?.toLowerCase().includes(q);
+          const matchSub = p.subCategory?.toLowerCase().includes(q);
+          if (!matchName && !matchDesc && !matchNote && !matchMain && !matchSub) return false;
         }
         return true;
       })
@@ -49,7 +85,13 @@ export const CatalogSection: React.FC<CatalogSectionProps> = ({
         }
         return 0;
       });
-  }, [products, selectedCategory, searchQuery, sortOption]);
+  }, [products, selectedCategory, selectedSubCategory, searchQuery, sortOption]);
+
+  const resetAllFilters = () => {
+    onSelectCategory('all');
+    onSelectSubCategory('all');
+    setSearchQuery('');
+  };
 
   return (
     <section id="catalog" className="py-12 sm:py-16 bg-neutral-50/70 border-b border-neutral-200/70">
@@ -81,7 +123,7 @@ export const CatalogSection: React.FC<CatalogSectionProps> = ({
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Tìm sản phẩm, phụ kiện, khay nhựa, thảm sàn, camera..."
+                placeholder="Tìm tên sản phẩm, dòng xe, ghi chú (khay nhựa, thảm sàn, hộc đồ...)"
                 className="w-full pl-10 pr-9 py-2.5 bg-neutral-50 hover:bg-neutral-100/60 focus:bg-white border border-neutral-200 focus:border-[#EE4D2D] rounded-xl text-sm focus:outline-none transition-all placeholder:text-neutral-400"
               />
               {searchQuery && (
@@ -111,49 +153,119 @@ export const CatalogSection: React.FC<CatalogSectionProps> = ({
             </div>
           </div>
 
-          {/* Bottom row: Category Pills */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-none text-xs">
-            <span className="text-neutral-400 font-medium whitespace-nowrap pl-1 hidden lg:inline">
-              Danh mục:
+          {/* Level 1: Cataloge Chính (Main Categories) */}
+          <div className="pt-2 border-t border-neutral-100 flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none text-xs">
+            <span className="text-neutral-500 font-bold whitespace-nowrap pl-1 flex items-center gap-1">
+              <Layers className="w-3.5 h-3.5 text-[#EE4D2D]" />
+              <span>Cataloge Chính:</span>
             </span>
-            {categories.map((cat) => (
+            {categories.map((cat) => {
+              const isActive = selectedCategory === cat.id;
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => {
+                    onSelectCategory(cat.id);
+                    onSelectSubCategory('all', cat.id);
+                  }}
+                  className={`px-3.5 py-1.5 rounded-xl font-bold whitespace-nowrap transition-all duration-150 cursor-pointer ${
+                    isActive
+                      ? 'bg-[#EE4D2D] text-white shadow-xs'
+                      : 'bg-neutral-100 hover:bg-neutral-200/80 text-neutral-700'
+                  }`}
+                >
+                  {cat.name}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Level 2: Cataloge Phụ (Subcategories) - displayed if available */}
+          {availableSubCategories.length > 0 && (
+            <div className="pt-2 border-t border-dashed border-neutral-200 flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none text-xs bg-neutral-50/70 p-2 rounded-xl">
+              <span className="text-neutral-500 font-bold whitespace-nowrap pl-1 flex items-center gap-1">
+                <Tag className="w-3.5 h-3.5 text-neutral-500" />
+                <span>Cataloge Phụ:</span>
+              </span>
+              
+              {/* All subcategories button */}
               <button
-                key={cat.id}
-                onClick={() => onSelectCategory(cat.id)}
-                className={`px-3 py-1.5 rounded-xl font-semibold whitespace-nowrap transition-all duration-150 cursor-pointer ${
-                  selectedCategory === cat.id
-                    ? 'bg-[#EE4D2D] text-white shadow-xs'
-                    : 'bg-neutral-100 hover:bg-neutral-200/80 text-neutral-700'
+                type="button"
+                onClick={() => onSelectSubCategory('all')}
+                className={`px-3 py-1 rounded-lg font-semibold whitespace-nowrap transition-colors cursor-pointer ${
+                  selectedSubCategory === 'all'
+                    ? 'bg-neutral-800 text-white shadow-xs'
+                    : 'bg-white text-neutral-600 hover:bg-neutral-200/80 border border-neutral-200/80'
                 }`}
               >
-                {cat.name}
+                Tất cả nhóm con
               </button>
-            ))}
-          </div>
+
+              {availableSubCategories.map((sub) => {
+                const isSubActive = selectedSubCategory === sub.id;
+                return (
+                  <button
+                    key={sub.id}
+                    type="button"
+                    onClick={() => onSelectSubCategory(sub.id)}
+                    className={`px-3 py-1 rounded-lg font-semibold whitespace-nowrap transition-colors cursor-pointer flex items-center gap-1 ${
+                      isSubActive
+                        ? 'bg-[#EE4D2D] text-white shadow-xs'
+                        : 'bg-white text-neutral-700 hover:border-[#EE4D2D] hover:text-[#EE4D2D] border border-neutral-200'
+                    }`}
+                  >
+                    <span>{sub.name}</span>
+                    <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                      isSubActive ? 'bg-white/25 text-white' : 'bg-neutral-100 text-neutral-500'
+                    }`}>
+                      {sub.count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
         </div>
 
         {/* Status bar */}
         <div className="flex items-center justify-between text-xs sm:text-sm font-semibold text-neutral-600 mb-6 px-1">
-          <div>
-            Đang hiển thị{' '}
-            <span className="font-bold text-[#EE4D2D]">{filteredProducts.length}</span> sản phẩm
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span>
+              Đang hiển thị <strong className="text-[#EE4D2D] font-extrabold">{filteredProducts.length}</strong> sản phẩm
+            </span>
             {selectedCategory !== 'all' && (
-              <span> trong <strong className="text-neutral-900">{categories.find(c => c.id === selectedCategory)?.name || selectedCategory}</strong></span>
+              <>
+                <span className="text-neutral-400">•</span>
+                <span>
+                  Chính: <strong className="text-neutral-900">{categories.find(c => c.id === selectedCategory)?.name || selectedCategory}</strong>
+                </span>
+              </>
+            )}
+            {selectedSubCategory !== 'all' && (
+              <>
+                <ChevronRight className="w-3.5 h-3.5 text-neutral-400" />
+                <span>
+                  Phụ: <strong className="text-[#EE4D2D]">{selectedSubCategory}</strong>
+                </span>
+              </>
             )}
             {searchQuery && (
-              <span> cho từ khóa "<strong className="text-neutral-900">{searchQuery}</strong>"</span>
+              <>
+                <span className="text-neutral-400">•</span>
+                <span>
+                  Từ khóa: "<strong className="text-neutral-900">{searchQuery}</strong>"
+                </span>
+              </>
             )}
           </div>
 
-          {(selectedCategory !== 'all' || searchQuery) && (
+          {(selectedCategory !== 'all' || selectedSubCategory !== 'all' || searchQuery) && (
             <button
-              onClick={() => {
-                onSelectCategory('all');
-                setSearchQuery('');
-              }}
-              className="text-xs text-[#EE4D2D] hover:underline font-bold cursor-pointer"
+              onClick={resetAllFilters}
+              className="text-xs text-[#EE4D2D] hover:underline font-bold cursor-pointer whitespace-nowrap ml-2"
             >
-              Xóa bộ lọc
+              Xóa bộ lọc (Xem tất cả)
             </button>
           )}
         </div>
@@ -162,7 +274,18 @@ export const CatalogSection: React.FC<CatalogSectionProps> = ({
         {filteredProducts.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
             {filteredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard
+                key={product.id}
+                product={product}
+                onSelectCategory={(catId) => {
+                  onSelectCategory(catId);
+                  onSelectSubCategory('all', catId);
+                }}
+                onSelectSubCategory={(subCatId, mainCatId) => {
+                  if (mainCatId) onSelectCategory(mainCatId);
+                  onSelectSubCategory(subCatId, mainCatId);
+                }}
+              />
             ))}
           </div>
         ) : (
@@ -177,10 +300,7 @@ export const CatalogSection: React.FC<CatalogSectionProps> = ({
               Hãy thử tìm kiếm với từ khóa khác hoặc chọn xem danh mục khác.
             </p>
             <button
-              onClick={() => {
-                onSelectCategory('all');
-                setSearchQuery('');
-              }}
+              onClick={resetAllFilters}
               className="px-5 py-2.5 rounded-xl bg-[#EE4D2D] text-white font-bold text-sm shadow-xs hover:bg-[#d83f20] transition-colors cursor-pointer"
             >
               Xem tất cả sản phẩm

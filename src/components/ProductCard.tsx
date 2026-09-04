@@ -1,12 +1,18 @@
 import React, { useState } from 'react';
-import { ExternalLink, ShieldCheck, ShoppingCart, Tag } from 'lucide-react';
+import { ExternalLink, ShieldCheck, ShoppingCart, Tag, ChevronRight } from 'lucide-react';
 import { Product } from '../types';
 
 interface ProductCardProps {
   product: Product;
+  onSelectCategory?: (catId: string) => void;
+  onSelectSubCategory?: (subCatId: string, mainCatId?: string) => void;
 }
 
-export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+export const ProductCard: React.FC<ProductCardProps> = ({
+  product,
+  onSelectCategory,
+  onSelectSubCategory,
+}) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
 
@@ -38,13 +44,37 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           }`}
         />
 
-        {/* Category Pill Tag on image */}
-        {product.category && (
-          <div className="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-xs text-white text-[11px] font-semibold flex items-center gap-1 shadow-xs">
-            <Tag className="w-3 h-3 text-[#EE4D2D]" />
-            <span>{product.category}</span>
-          </div>
-        )}
+        {/* Category Badges on Image (Main and Sub) */}
+        <div className="absolute top-2.5 left-2.5 flex flex-wrap items-center gap-1 z-10 max-w-[90%]">
+          {product.mainCategory && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onSelectCategory?.(product.mainCategory);
+              }}
+              className="px-2.5 py-1 rounded-lg bg-black/65 backdrop-blur-xs text-white text-[11px] font-semibold flex items-center gap-1 shadow-xs hover:bg-[#EE4D2D] transition-colors cursor-pointer"
+              title="Lọc theo Cataloge Chính"
+            >
+              <Tag className="w-3 h-3 text-[#EE4D2D]" />
+              <span>{product.mainCategory}</span>
+            </button>
+          )}
+
+          {product.subCategory && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onSelectSubCategory?.(product.subCategory!, product.mainCategory);
+              }}
+              className="px-2.5 py-1 rounded-lg bg-[#EE4D2D] text-white text-[11px] font-bold shadow-xs hover:bg-[#d73a1c] transition-colors cursor-pointer flex items-center gap-0.5"
+              title="Lọc theo Cataloge Phụ"
+            >
+              <span>{product.subCategory}</span>
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Card Content */}

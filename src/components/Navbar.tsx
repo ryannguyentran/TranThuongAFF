@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
-import { ShoppingBag, ShieldCheck, ExternalLink, Code2, Menu, X, FileSpreadsheet } from 'lucide-react';
-import { SITE_CONFIG } from '../data/affiliateData';
+import { ShoppingBag, ShieldCheck, Menu, X, Lock } from 'lucide-react';
 
 interface NavbarProps {
-  onOpenGuide: () => void;
-  onOpenSync: () => void;
+  onOpenAdmin: () => void;
+  isAdminAuthenticated?: boolean;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ onOpenGuide, onOpenSync }) => {
+export const Navbar: React.FC<NavbarProps> = ({ onOpenAdmin, isAdminAuthenticated }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
@@ -55,40 +54,24 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenGuide, onOpenSync }) => {
               Danh Mục
             </a>
 
-            {/* Quick Affiliate Edit Helper Modal Button */}
+            {/* Discreet Admin Lock Button (Only visible/usable with password) */}
             <button
-              onClick={onOpenGuide}
+              onClick={onOpenAdmin}
               type="button"
-              className="ml-2 flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-neutral-100 hover:bg-neutral-200/80 text-neutral-700 border border-neutral-200 transition-colors cursor-pointer"
-              title="Hướng dẫn thay link affiliate trong code"
+              className={`ml-2 flex items-center gap-1.5 px-2.5 py-1.5 text-xs rounded-lg transition-colors cursor-pointer ${
+                isAdminAuthenticated
+                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 font-semibold'
+                  : 'text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100'
+              }`}
+              title={isAdminAuthenticated ? 'Quản trị viên (Đã đăng nhập)' : 'Quản trị viên (Yêu cầu mật khẩu)'}
             >
-              <Code2 className="w-3.5 h-3.5 text-[#EE4D2D]" />
-              <span>Thay Link</span>
-            </button>
-
-            {/* Sync from Link / Sheet Button */}
-            <button
-              onClick={onOpenSync}
-              type="button"
-              className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold rounded-lg bg-[#EE4D2D] hover:bg-[#d83f20] text-white shadow-xs hover:shadow-sm transition-all cursor-pointer"
-              title="Tự động cập nhật sản phẩm theo link Google Sheet hoặc bảng CSV"
-            >
-              <FileSpreadsheet className="w-3.5 h-3.5" />
-              <span>Cập Nhật Từ Link / Sheet</span>
+              <Lock className="w-3.5 h-3.5" />
+              <span className="text-[11px]">{isAdminAuthenticated ? 'Đang Quản Trị' : 'Quản Trị'}</span>
             </button>
           </nav>
 
           {/* Mobile menu button */}
           <div className="flex items-center gap-2 md:hidden">
-            <button
-              onClick={onOpenSync}
-              type="button"
-              className="p-2 rounded-lg bg-[#EE4D2D] text-white text-xs font-bold flex items-center gap-1 shadow-xs"
-              title="Cập nhật link / sheet"
-            >
-              <FileSpreadsheet className="w-4 h-4" />
-              <span className="text-[11px]">Đồng Bộ Link</span>
-            </button>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="p-2 rounded-lg text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 focus:outline-none"
@@ -123,8 +106,23 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenGuide, onOpenSync }) => {
           >
             📁 Danh Mục Sản Phẩm
           </a>
+
+          {/* Discreet Admin Lock Button for Mobile */}
+          <div className="pt-2 border-t border-neutral-100">
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                onOpenAdmin();
+              }}
+              className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-neutral-500 hover:text-neutral-800 hover:bg-neutral-50 text-left cursor-pointer"
+            >
+              <Lock className="w-3.5 h-3.5 text-neutral-400" />
+              <span>Khu vực Quản trị viên (Khóa bảo mật)</span>
+            </button>
+          </div>
         </div>
       )}
     </header>
   );
 };
+

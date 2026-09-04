@@ -6,17 +6,22 @@ import { Hero } from './components/Hero';
 import { CategorySection } from './components/CategorySection';
 import { CatalogSection } from './components/CatalogSection';
 import { Footer } from './components/Footer';
-import { AffiliateGuideModal } from './components/AffiliateGuideModal';
+import { AdminAuthModal } from './components/AdminAuthModal';
 import { SyncSheetModal } from './components/SyncSheetModal';
 import { extractCategories } from './utils/csvParser';
 
-const STORAGE_PRODUCTS_KEY = 'tranthuong_custom_products_v3';
-const STORAGE_SHEET_KEY = 'tranthuong_sheet_url_v3';
+const STORAGE_PRODUCTS_KEY = 'tranthuong_custom_products_v4';
+const STORAGE_SHEET_KEY = 'tranthuong_sheet_url_v4';
+const STORAGE_ADMIN_KEY = 'tranthuong_admin_auth_v1';
 
 export default function App() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [isGuideOpen, setIsGuideOpen] = useState<boolean>(false);
+  const [selectedSubCategory, setSelectedSubCategory] = useState<string>('all');
+  const [isAdminAuthOpen, setIsAdminAuthOpen] = useState<boolean>(false);
   const [isSyncOpen, setIsSyncOpen] = useState<boolean>(false);
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState<boolean>(() => {
+    return sessionStorage.getItem(STORAGE_ADMIN_KEY) === 'true';
+  });
   const [sheetUrl, setSheetUrl] = useState<string>(() => {
     return localStorage.getItem(STORAGE_SHEET_KEY) || '';
   });
@@ -27,13 +32,7 @@ export default function App() {
       try {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          // Check if it contained the mistaken old VF3/VF4/VF5 categories
-          const hasOldMistakenCats = parsed.some(
-            (p: Product) => p.category?.includes('VF3') || p.category?.includes('VF4') || p.category?.includes('VF5')
-          );
-          if (!hasOldMistakenCats) {
-            return parsed;
-          }
+          return parsed;
         }
       } catch (e) {
         console.error('Error parsing stored products:', e);
@@ -41,6 +40,18 @@ export default function App() {
     }
     return PRODUCTS;
   });
+
+  // Hotkey listener for admin (Ctrl + Shift + A or Ctrl + Shift + U)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'A' || e.key === 'a' || e.key === 'U' || e.key === 'u')) {
+        e.preventDefault();
+        handleOpenAdmin();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isAdminAuthenticated]);
 
   // Calculate dynamic categories
   const categories: CategoryItem[] = useMemo(() => {
@@ -50,20 +61,38 @@ export default function App() {
     return extractCategories(products);
   }, [products]);
 
-  // Calculate product counts per category
+  // Calculate product counts per category and mainCategory
   const productCounts = useMemo(() => {
     const counts: Record<string, number> = {
       all: products.length,
     };
     products.forEach((product) => {
-      counts[product.category] = (counts[product.category] || 0) + 1;
+      if (product.mainCategory) {
+        counts[product.mainCategory] = (counts[product.mainCategory] || 0) + 1;
+      }
+      if (product.category) {
+        counts[product.category] = (counts[product.category] || 0) + 1;
+      }
     });
     return counts;
   }, [products]);
 
+  const handleSelectCategory = (catId: string) => {
+    setSelectedCategory(catId);
+    setSelectedSubCategory('all');
+  };
+
+  const handleSelectSubCategory = (subCatId: string, mainCatId?: string) => {
+    setSelectedSubCategory(subCatId);
+    if (mainCatId) {
+      setSelectedCategory(mainCatId);
+    }
+  };
+
   const handleUpdateProducts = (newProducts: Product[]) => {
     setProducts(newProducts);
     setSelectedCategory('all');
+    setSelectedSubCategory('all');
     localStorage.setItem(STORAGE_PRODUCTS_KEY, JSON.stringify(newProducts));
   };
 
@@ -72,12 +101,32 @@ export default function App() {
     localStorage.setItem(STORAGE_SHEET_KEY, url);
   };
 
+  const handleOpenAdmin = () => {
+    if (isAdminAuthenticated) {
+      setIsSyncOpen(true);
+    } else {
+      setIsAdminAuthOpen(true);
+    }
+  };
+
+  const handleAuthSuccess = () => {
+    setIsAdminAuthenticated(true);
+    sessionStorage.setItem(STORAGE_ADMIN_KEY, 'true');
+    setIsAdminAuthOpen(false);
+    setIsSyncOpen(true);
+  };
+
+  const handleLogoutAdmin = () => {
+    setIsAdminAuthenticated(false);
+    sessionStorage.removeItem(STORAGE_ADMIN_KEY);
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-neutral-50 text-neutral-900 font-sans selection:bg-[#EE4D2D] selection:text-white">
       {/* Top sticky navbar */}
       <Navbar
-        onOpenGuide={() => setIsGuideOpen(true)}
-        onOpenSync={() => setIsSyncOpen(true)}
+        onOpenAdmin={handleOpenAdmin}
+        isAdminAuthenticated={isAdminAuthenticated}
       />
 
       <main className="flex-1">
@@ -88,7 +137,9 @@ export default function App() {
         <CategorySection
           categories={categories}
           selectedCategory={selectedCategory}
-          onSelectCategory={setSelectedCategory}
+          selectedSubCategory={selectedSubCategory}
+          onSelectCategory={handleSelectCategory}
+          onSelectSubCategory={handleSelectSubCategory}
           productCounts={productCounts}
         />
 
@@ -97,26 +148,33 @@ export default function App() {
           products={products}
           categories={categories}
           selectedCategory={selectedCategory}
-          onSelectCategory={setSelectedCategory}
+          selectedSubCategory={selectedSubCategory}
+          onSelectCategory={handleSelectCategory}
+          onSelectSubCategory={handleSelectSubCategory}
         />
       </main>
 
       {/* 5. Footer with Disclaimer & Socials */}
-      <Footer />
-
-      {/* Helper Modal for site owner to easily swap affiliate links */}
-      <AffiliateGuideModal
-        isOpen={isGuideOpen}
-        onClose={() => setIsGuideOpen(false)}
+      <Footer
+        onOpenAdmin={handleOpenAdmin}
+        isAdminAuthenticated={isAdminAuthenticated}
       />
 
-      {/* Modal to Auto-Sync / Update products from Sheet or CSV */}
+      {/* Admin Password Authentication Modal */}
+      <AdminAuthModal
+        isOpen={isAdminAuthOpen}
+        onClose={() => setIsAdminAuthOpen(false)}
+        onSuccess={handleAuthSuccess}
+      />
+
+      {/* Protected Admin Modal to Sync / Update products from Sheet or CSV */}
       <SyncSheetModal
         isOpen={isSyncOpen}
         onClose={() => setIsSyncOpen(false)}
         onUpdateProducts={handleUpdateProducts}
         savedSheetUrl={sheetUrl}
         onSaveSheetUrl={handleSaveSheetUrl}
+        onLogoutAdmin={handleLogoutAdmin}
       />
     </div>
   );
