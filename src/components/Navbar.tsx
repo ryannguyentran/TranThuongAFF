@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { ShoppingBag, ShieldCheck, Menu, X, Lock } from 'lucide-react';
+import { ShoppingBag, ShieldCheck, Menu, X, Lock, ExternalLink } from 'lucide-react';
+import { SITE_CONFIG } from '../data/affiliateData';
 
 interface NavbarProps {
   onOpenAdmin: () => void;
@@ -53,6 +54,15 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAdmin, isAdminAuthenticate
             >
               Danh Mục
             </a>
+            <a
+              href={SITE_CONFIG.socials.facebook}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-3 py-1.5 rounded-lg text-xs font-semibold text-[#1877F2] bg-blue-50/80 hover:bg-blue-100/80 border border-blue-200/80 transition-colors flex items-center gap-1"
+            >
+              <span>Facebook</span>
+              <ExternalLink className="w-3 h-3 opacity-70" />
+            </a>
 
             {/* Discreet Admin Lock Button (Only visible/usable with password) */}
             <button
@@ -105,6 +115,16 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAdmin, isAdminAuthenticate
             className="block px-3 py-2.5 rounded-lg text-base font-medium text-neutral-800 hover:bg-neutral-100"
           >
             📁 Danh Mục Sản Phẩm
+          </a>
+          <a
+            href={SITE_CONFIG.socials.facebook}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => setMobileMenuOpen(false)}
+            className="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-semibold text-[#1877F2] bg-blue-50 border border-blue-200"
+          >
+            <span>Facebook (Nguyễn Trần Thương)</span>
+            <ExternalLink className="w-4 h-4" />
           </a>
 
           {/* Discreet Admin Lock Button for Mobile */}

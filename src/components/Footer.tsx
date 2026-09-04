@@ -62,19 +62,19 @@ export const Footer: React.FC<FooterProps> = ({ onOpenAdmin, isAdminAuthenticate
           {/* Social Links & Community */}
           <div className="md:col-span-4 space-y-3">
             <h4 className="text-sm font-bold text-white uppercase tracking-wider">
-              Cộng Đồng Săn Deal
+              Kết Nối & Giao Lưu
             </h4>
             <p className="text-xs text-neutral-400 leading-relaxed">
-              Tham gia các kênh chia sẻ mã giảm giá và flash sale Shopee mỗi ngày:
+              Theo dõi và kết nối với mình qua mạng xã hội:
             </p>
             <div className="flex flex-wrap gap-2 pt-1">
               <a
                 href={SITE_CONFIG.socials.facebook}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-3 py-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-xs font-semibold text-neutral-200 hover:text-white transition-colors flex items-center gap-1.5"
+                className="px-3.5 py-1.5 rounded-lg bg-[#1877F2] hover:bg-[#166fe5] text-xs font-bold text-white transition-colors flex items-center gap-1.5 shadow-xs"
               >
-                <span>Facebook Group</span>
+                <span>Facebook</span>
               </a>
               <a
                 href={SITE_CONFIG.socials.telegram}

@@ -37,6 +37,7 @@ export interface CategoryItem {
 export interface SiteConfig {
   siteName: string;
   tagline: string;
+  slogan?: string;
   heroTitle: string;
   heroSubtitle: string;
   disclaimer: string;

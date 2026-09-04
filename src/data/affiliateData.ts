@@ -14,13 +14,15 @@ import { CategoryItem, Product, SiteConfig } from '../types';
 export const SITE_CONFIG: SiteConfig = {
   siteName: 'TranThuong',
   tagline: 'TranThuong – Săn deal Shopee chính hãng',
+  slogan:
+    'Tất cả các sản phẩm mình đưa lên đây đều đã tự mua và sử dụng + trải nghiệm qua rồi mới đưa lên. Nên mọi người có thể an tâm về chất lượng nghen.',
   heroTitle: '',
   heroSubtitle: '',
   disclaimer:
     'Website chia sẻ các sản phẩm chất lượng, với giá ưu đãi. Chúng tôi tổng hợp các chương trình khuyến mãi từ Shopee Mall và không trực tiếp thu tiền hay phân phối sản phẩm.',
   privacyNotice: 'Không cần đăng nhập, không thu thập dữ liệu người dùng.',
   socials: {
-    facebook: 'https://facebook.com',
+    facebook: 'https://www.facebook.com/nguyentranthuong89/',
     telegram: 'https://telegram.org',
     zalo: 'https://zalo.me',
     tiktok: 'https://tiktok.com',
