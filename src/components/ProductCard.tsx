@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { ExternalLink, Flame, Star, TrendingUp, ShieldCheck, Tag, ShoppingCart } from 'lucide-react';
-import { Product, DealBadge } from '../types';
-import { formatVND, calculateDiscountPercent } from '../utils/formatters';
+import { ExternalLink, ShieldCheck, ShoppingCart, Tag } from 'lucide-react';
+import { Product } from '../types';
 
 interface ProductCardProps {
   product: Product;
@@ -10,37 +9,6 @@ interface ProductCardProps {
 export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
-
-  const discountPercent = calculateDiscountPercent(product.originalPrice, product.salePrice);
-
-  // Badge configuration
-  const renderBadge = (badge: DealBadge) => {
-    switch (badge) {
-      case 'Deal hot':
-        return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-red-600 to-[#EE4D2D] text-white shadow-xs">
-            <Flame className="w-3.5 h-3.5 fill-current" />
-            Deal hot
-          </span>
-        );
-      case 'Bán chạy':
-        return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500 text-white shadow-xs">
-            <TrendingUp className="w-3.5 h-3.5" />
-            Bán chạy
-          </span>
-        );
-      case 'Giảm sâu':
-        return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-600 text-white shadow-xs">
-            <Tag className="w-3.5 h-3.5" />
-            Giảm sâu
-          </span>
-        );
-      default:
-        return null;
-    }
-  };
 
   return (
     <article
@@ -70,89 +38,55 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           }`}
         />
 
-        {/* Top Badges Overlay */}
-        <div className="absolute top-2.5 left-2.5 flex flex-wrap gap-1.5 z-10">
-          {renderBadge(product.badge)}
-
-          {product.isMall && (
-            <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded text-[11px] font-extrabold bg-[#D0011B] text-white uppercase tracking-wider shadow-xs">
-              Shopee Mall
-            </span>
-          )}
-        </div>
-
-        {/* Discount Percentage Pill */}
-        {discountPercent > 0 && (
-          <div className="absolute top-2.5 right-2.5 px-2 py-1 rounded-lg bg-red-500 text-white text-xs font-black shadow-md tracking-tight">
-            -{discountPercent}%
-          </div>
-        )}
-
-        {/* Optional Voucher Tag on image bottom */}
-        {product.voucherTag && (
-          <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-black/60 backdrop-blur-xs text-white text-[11px] font-medium">
-            {product.voucherTag}
+        {/* Category Pill Tag on image */}
+        {product.category && (
+          <div className="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-xs text-white text-[11px] font-semibold flex items-center gap-1 shadow-xs">
+            <Tag className="w-3 h-3 text-[#EE4D2D]" />
+            <span>{product.category}</span>
           </div>
         )}
       </div>
 
       {/* Card Content */}
       <div className="p-4 sm:p-5 flex flex-col flex-1">
-        
-        {/* Rating & Sold count */}
-        <div className="flex items-center justify-between text-xs text-neutral-500 mb-2 font-medium">
-          <div className="flex items-center gap-1 text-amber-500 font-bold">
-            <Star className="w-3.5 h-3.5 fill-current" />
-            <span>{product.rating}</span>
-          </div>
-          <span className="text-neutral-500">{product.soldCount}</span>
-        </div>
-
         {/* Product Title */}
-        <h3 className="font-bold text-neutral-900 text-sm sm:text-base leading-snug line-clamp-2 min-h-[2.75rem] mb-2.5 group-hover:text-[#EE4D2D] transition-colors">
+        <h3 className="font-bold text-neutral-900 text-sm sm:text-base leading-snug line-clamp-2 min-h-[2.5rem] mb-2.5 group-hover:text-[#EE4D2D] transition-colors">
           {product.name}
         </h3>
 
-        {/* Description brief if available */}
-        {product.description && (
-          <p className="text-xs text-neutral-500 line-clamp-1 mb-3">
+        {/* Note / Ghi chú if available */}
+        {product.note && (
+          <div className="mb-3 px-3 py-2 rounded-xl bg-amber-50/90 border border-amber-200/80 text-[12px] text-amber-900 leading-snug flex items-start gap-1.5">
+            <span className="font-bold text-amber-700 shrink-0">💡 Lưu ý:</span>
+            <span className="font-medium">{product.note}</span>
+          </div>
+        )}
+
+        {/* Description brief if available (only if no note or different from note) */}
+        {product.description && product.description !== product.note && !product.note && (
+          <p className="text-xs text-neutral-500 line-clamp-2 mb-3">
             {product.description}
           </p>
         )}
 
-        {/* Pricing block */}
-        <div className="mt-auto pt-2 border-t border-neutral-100 mb-4">
-          <div className="flex items-baseline gap-2 flex-wrap">
-            {/* Sale price in Shopee Orange */}
-            <span className="text-xl sm:text-2xl font-black text-[#EE4D2D] tracking-tight">
-              {formatVND(product.salePrice)}
-            </span>
-            {/* Strikethrough original price */}
-            {product.originalPrice > product.salePrice && (
-              <span className="text-xs sm:text-sm text-neutral-400 line-through">
-                {formatVND(product.originalPrice)}
-              </span>
-            )}
-          </div>
-          <p className="text-[11px] text-emerald-700 font-semibold mt-0.5 flex items-center gap-1">
-            <ShieldCheck className="w-3 h-3 text-emerald-600" />
-            Giá cam kết qua link Shopee chính hãng
+        {/* Prominent CTA Button and link notice */}
+        <div className="mt-auto pt-3 border-t border-neutral-100 flex flex-col gap-2">
+          <a
+            href={product.affiliateUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            id={`buy-btn-${product.id}`}
+            className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-sm sm:text-base font-bold text-white bg-[#EE4D2D] hover:bg-[#d73a1c] active:bg-[#c03014] shadow-md shadow-[#EE4D2D]/20 hover:shadow-lg hover:shadow-[#EE4D2D]/30 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#EE4D2D] focus:ring-offset-2"
+          >
+            <ShoppingCart className="w-4 h-4" />
+            <span>Xem Trên Shopee</span>
+            <ExternalLink className="w-4 h-4 opacity-90" />
+          </a>
+          <p className="text-[11px] text-neutral-500 text-center flex items-center justify-center gap-1">
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+            <span>Mở trực tiếp link sản phẩm trên Shopee</span>
           </p>
         </div>
-
-        {/* Prominent CTA Button */}
-        <a
-          href={product.affiliateUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          id={`buy-btn-${product.id}`}
-          className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-sm sm:text-base font-bold text-white bg-[#EE4D2D] hover:bg-[#d73a1c] active:bg-[#c03014] shadow-md shadow-[#EE4D2D]/20 hover:shadow-lg hover:shadow-[#EE4D2D]/30 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#EE4D2D] focus:ring-offset-2"
-        >
-          <ShoppingCart className="w-4 h-4" />
-          <span>Mua Ngay</span>
-          <ExternalLink className="w-4 h-4 opacity-90" />
-        </a>
-
       </div>
     </article>
   );

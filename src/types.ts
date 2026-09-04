@@ -14,6 +14,7 @@ export interface Product {
   affiliateUrl: string;
   voucherTag?: string;
   description?: string;
+  note?: string;
 }
 
 export interface CategoryItem {

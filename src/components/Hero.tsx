@@ -14,7 +14,7 @@ export const Hero: React.FC<HeroProps> = ({ totalDealsCount }) => {
         {/* Badge: Link Sản Phẩm Chính Hãng */}
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-800 text-xs sm:text-sm font-bold shadow-xs mb-4 hover:bg-emerald-100/80 transition-colors">
           <ShieldCheck className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-emerald-600 shrink-0" />
-          <span>Link Sản Phẩm Chính Hãng Shopee Mall</span>
+          <span>Link Sản Phẩm Shopee Chọn Lọc</span>
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
         </div>
 
@@ -22,11 +22,11 @@ export const Hero: React.FC<HeroProps> = ({ totalDealsCount }) => {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 max-w-3xl mx-auto">
           <div className="flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-white border border-neutral-200/80 shadow-xs text-xs font-semibold text-neutral-700">
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-            <span>Deal thật 100%</span>
+            <span>Sản phẩm chọn lọc</span>
           </div>
           <div className="flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-white border border-neutral-200/80 shadow-xs text-xs font-semibold text-neutral-700">
             <Zap className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-            <span>Không tăng giá ảo</span>
+            <span>Đúng mã & phụ kiện</span>
           </div>
           <div className="flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-white border border-neutral-200/80 shadow-xs text-xs font-semibold text-neutral-700">
             <TrendingUp className="w-3.5 h-3.5 text-blue-600 shrink-0" />
@@ -34,7 +34,7 @@ export const Hero: React.FC<HeroProps> = ({ totalDealsCount }) => {
           </div>
           <div className="flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-white border border-neutral-200/80 shadow-xs text-xs font-semibold text-neutral-700">
             <Sparkles className="w-3.5 h-3.5 text-[#EE4D2D] shrink-0" />
-            <span>{totalDealsCount}+ Sản phẩm hot</span>
+            <span>{totalDealsCount} Sản phẩm</span>
           </div>
         </div>
       </div>

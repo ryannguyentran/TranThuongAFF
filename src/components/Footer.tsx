@@ -26,7 +26,7 @@ export const Footer: React.FC = () => {
             </div>
             
             <p className="text-sm text-neutral-400 max-w-sm leading-relaxed">
-              Trang thông tin & catalog tổng hợp các ưu đãi, mã giảm giá tốt nhất từ các gian hàng chính hãng Shopee Mall Việt Nam.
+              Trang thông tin & catalog giới thiệu các phụ kiện, sản phẩm chất lượng chọn lọc với link liên kết trực tiếp trên Shopee.
             </p>
 
             <div className="flex items-center gap-2 text-xs text-emerald-400 font-semibold pt-1">
@@ -43,7 +43,7 @@ export const Footer: React.FC = () => {
             <ul className="space-y-2 text-sm text-neutral-400">
               <li>
                 <a href="#catalog" className="hover:text-[#EE4D2D] transition-colors">
-                  🔥 Deal Hot Hôm Nay
+                  📦 Danh Sách Sản Phẩm
                 </a>
               </li>
               <li>

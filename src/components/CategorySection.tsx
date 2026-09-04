@@ -1,8 +1,27 @@
 import React from 'react';
-import { Flame, Headphones, Home, Laptop, Coffee, Sparkles, LucideIcon } from 'lucide-react';
+import {
+  Flame,
+  Headphones,
+  Home,
+  Laptop,
+  Coffee,
+  Sparkles,
+  Car,
+  Radio,
+  Layers,
+  Video,
+  ShieldCheck,
+  Zap,
+  Tag,
+  Wrench,
+  Package,
+  LucideIcon,
+} from 'lucide-react';
 import { CATEGORIES } from '../data/affiliateData';
+import { CategoryItem } from '../types';
 
 interface CategorySectionProps {
+  categories?: CategoryItem[];
   selectedCategory: string;
   onSelectCategory: (categoryId: string) => void;
   productCounts: Record<string, number>;
@@ -15,9 +34,19 @@ const iconMap: Record<string, LucideIcon> = {
   Laptop,
   Coffee,
   Sparkles,
+  Car,
+  Radio,
+  Layers,
+  Video,
+  ShieldCheck,
+  Zap,
+  Tag,
+  Wrench,
+  Package,
 };
 
 export const CategorySection: React.FC<CategorySectionProps> = ({
+  categories = CATEGORIES,
   selectedCategory,
   onSelectCategory,
   productCounts,
@@ -32,18 +61,18 @@ export const CategorySection: React.FC<CategorySectionProps> = ({
               <span>Danh mục sản phẩm</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-neutral-900 tracking-tight">
-              Khám Phá Theo Nhóm Deal
+              Khám Phá Theo Nhóm Sản Phẩm
             </h2>
           </div>
           <p className="text-sm text-neutral-500 max-w-md">
-            Chọn nhóm sản phẩm bạn đang quan tâm để xem các khuyến mãi đang giảm giá sâu nhất.
+            Chọn nhóm sản phẩm bạn đang quan tâm để xem danh sách phụ kiện và link Shopee tương ứng.
           </p>
         </div>
 
         {/* Category Cards Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-          {CATEGORIES.map((cat) => {
-            const Icon = iconMap[cat.icon] || Flame;
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
+          {categories.map((cat) => {
+            const Icon = iconMap[cat.icon] || Car || Flame;
             const isSelected = selectedCategory === cat.id;
             const count = cat.id === 'all' 
               ? productCounts['all'] || 0 

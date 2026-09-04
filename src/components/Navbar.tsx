@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { ShoppingBag, ShieldCheck, ExternalLink, Code2, Menu, X } from 'lucide-react';
+import { ShoppingBag, ShieldCheck, ExternalLink, Code2, Menu, X, FileSpreadsheet } from 'lucide-react';
 import { SITE_CONFIG } from '../data/affiliateData';
 
 interface NavbarProps {
   onOpenGuide: () => void;
+  onOpenSync: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ onOpenGuide }) => {
+export const Navbar: React.FC<NavbarProps> = ({ onOpenGuide, onOpenSync }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
@@ -27,7 +28,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenGuide }) => {
                   </span>
                 </div>
                 <p className="text-[11px] sm:text-xs text-neutral-500 font-medium hidden sm:block">
-                  Săn deal Shopee chính hãng
+                  Giới thiệu sản phẩm & phụ kiện
                 </p>
               </div>
             </a>
@@ -45,7 +46,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenGuide }) => {
               href="#catalog"
               className="px-3.5 py-2 rounded-lg text-sm font-semibold text-neutral-700 hover:text-[#EE4D2D] hover:bg-neutral-100/80 transition-colors"
             >
-              Deal Hot Hôm Nay
+              Sản Phẩm
             </a>
             <a
               href="#categories"
@@ -59,22 +60,34 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenGuide }) => {
               onClick={onOpenGuide}
               type="button"
               className="ml-2 flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-neutral-100 hover:bg-neutral-200/80 text-neutral-700 border border-neutral-200 transition-colors cursor-pointer"
-              title="Hướng dẫn thay link affiliate trong 1 file"
+              title="Hướng dẫn thay link affiliate trong code"
             >
               <Code2 className="w-3.5 h-3.5 text-[#EE4D2D]" />
-              <span>Thay Link Affiliate</span>
+              <span>Thay Link</span>
+            </button>
+
+            {/* Sync from Link / Sheet Button */}
+            <button
+              onClick={onOpenSync}
+              type="button"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold rounded-lg bg-[#EE4D2D] hover:bg-[#d83f20] text-white shadow-xs hover:shadow-sm transition-all cursor-pointer"
+              title="Tự động cập nhật sản phẩm theo link Google Sheet hoặc bảng CSV"
+            >
+              <FileSpreadsheet className="w-3.5 h-3.5" />
+              <span>Cập Nhật Từ Link / Sheet</span>
             </button>
           </nav>
 
           {/* Mobile menu button */}
           <div className="flex items-center gap-2 md:hidden">
             <button
-              onClick={onOpenGuide}
+              onClick={onOpenSync}
               type="button"
-              className="p-2 rounded-lg bg-neutral-100 text-neutral-700 text-xs font-medium flex items-center gap-1"
+              className="p-2 rounded-lg bg-[#EE4D2D] text-white text-xs font-bold flex items-center gap-1 shadow-xs"
+              title="Cập nhật link / sheet"
             >
-              <Code2 className="w-4 h-4 text-[#EE4D2D]" />
-              <span className="text-[11px]">Đổi Link</span>
+              <FileSpreadsheet className="w-4 h-4" />
+              <span className="text-[11px]">Đồng Bộ Link</span>
             </button>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -93,7 +106,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenGuide }) => {
         <div className="md:hidden border-t border-neutral-200 bg-white px-4 pt-3 pb-5 space-y-2 animate-in fade-in slide-in-from-top-2 duration-200">
           <div className="flex items-center gap-2 py-2 px-3 rounded-lg bg-emerald-50 text-emerald-800 text-xs font-semibold border border-emerald-200">
             <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-            <span>Link Sản Phẩm Chính Hãng Shopee Mall</span>
+            <span>Link Sản Phẩm Shopee Chọn Lọc</span>
           </div>
 
           <a
@@ -101,7 +114,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenGuide }) => {
             onClick={() => setMobileMenuOpen(false)}
             className="block px-3 py-2.5 rounded-lg text-base font-medium text-neutral-800 hover:bg-neutral-100"
           >
-            🔥 Deal Hot Hôm Nay
+            📦 Danh Sách Sản Phẩm
           </a>
           <a
             href="#categories"
