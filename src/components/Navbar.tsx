@@ -1,13 +1,8 @@
 import React, { useState } from 'react';
-import { ShoppingBag, ShieldCheck, Menu, X, Lock, ExternalLink } from 'lucide-react';
+import { ShoppingBag, ShieldCheck, Menu, X, ExternalLink } from 'lucide-react';
 import { SITE_CONFIG } from '../data/affiliateData';
 
-interface NavbarProps {
-  onOpenAdmin: () => void;
-  isAdminAuthenticated?: boolean;
-}
-
-export const Navbar: React.FC<NavbarProps> = ({ onOpenAdmin, isAdminAuthenticated }) => {
+export const Navbar: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
@@ -41,7 +36,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAdmin, isAdminAuthenticate
           </div>
 
           {/* Desktop Nav Links */}
-          <nav className="hidden md:flex items-center gap-1 sm:gap-2">
+          <nav className="hidden md:flex items-center gap-2">
             <a
               href="#catalog"
               className="px-3.5 py-2 rounded-lg text-sm font-semibold text-neutral-700 hover:text-[#EE4D2D] hover:bg-neutral-100/80 transition-colors"
@@ -58,33 +53,18 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAdmin, isAdminAuthenticate
               href={SITE_CONFIG.socials.facebook}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-3 py-1.5 rounded-lg text-xs font-semibold text-[#1877F2] bg-blue-50/80 hover:bg-blue-100/80 border border-blue-200/80 transition-colors flex items-center gap-1"
+              className="px-3.5 py-2 rounded-lg text-sm font-semibold text-[#1877F2] bg-blue-50 hover:bg-blue-100 border border-blue-200/80 transition-colors flex items-center gap-1.5 shadow-2xs"
             >
               <span>Facebook</span>
-              <ExternalLink className="w-3 h-3 opacity-70" />
+              <ExternalLink className="w-3.5 h-3.5 opacity-75" />
             </a>
-
-            {/* Discreet Admin Lock Button (Only visible/usable with password) */}
-            <button
-              onClick={onOpenAdmin}
-              type="button"
-              className={`ml-2 flex items-center gap-1.5 px-2.5 py-1.5 text-xs rounded-lg transition-colors cursor-pointer ${
-                isAdminAuthenticated
-                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 font-semibold'
-                  : 'text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100'
-              }`}
-              title={isAdminAuthenticated ? 'Quản trị viên (Đã đăng nhập)' : 'Quản trị viên (Yêu cầu mật khẩu)'}
-            >
-              <Lock className="w-3.5 h-3.5" />
-              <span className="text-[11px]">{isAdminAuthenticated ? 'Đang Quản Trị' : 'Quản Trị'}</span>
-            </button>
           </nav>
 
           {/* Mobile menu button */}
           <div className="flex items-center gap-2 md:hidden">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 focus:outline-none"
+              className="p-2 rounded-lg text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 focus:outline-none cursor-pointer"
               aria-label="Menu"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -126,20 +106,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAdmin, isAdminAuthenticate
             <span>Facebook (Nguyễn Trần Thương)</span>
             <ExternalLink className="w-4 h-4" />
           </a>
-
-          {/* Discreet Admin Lock Button for Mobile */}
-          <div className="pt-2 border-t border-neutral-100">
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                onOpenAdmin();
-              }}
-              className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-neutral-500 hover:text-neutral-800 hover:bg-neutral-50 text-left cursor-pointer"
-            >
-              <Lock className="w-3.5 h-3.5 text-neutral-400" />
-              <span>Khu vực Quản trị viên (Khóa bảo mật)</span>
-            </button>
-          </div>
         </div>
       )}
     </header>

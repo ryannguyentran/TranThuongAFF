@@ -1,13 +1,8 @@
 import React from 'react';
-import { ShoppingBag, ShieldCheck, ArrowUp, Send, Lock } from 'lucide-react';
+import { ShoppingBag, ShieldCheck, ArrowUp, Send } from 'lucide-react';
 import { SITE_CONFIG } from '../data/affiliateData';
 
-interface FooterProps {
-  onOpenAdmin?: () => void;
-  isAdminAuthenticated?: boolean;
-}
-
-export const Footer: React.FC<FooterProps> = ({ onOpenAdmin, isAdminAuthenticated }) => {
+export const Footer: React.FC = () => {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -127,17 +122,6 @@ export const Footer: React.FC<FooterProps> = ({ onOpenAdmin, isAdminAuthenticate
           <p>© {new Date().getFullYear()} TranThuong. Link sản phẩm Shopee chính hãng.</p>
           
           <div className="flex items-center gap-4">
-            {onOpenAdmin && (
-              <button
-                onClick={onOpenAdmin}
-                className="flex items-center gap-1.5 text-neutral-500 hover:text-neutral-300 transition-colors cursor-pointer"
-                title="Khu vực quản trị dành cho chủ website"
-              >
-                <Lock className="w-3.5 h-3.5" />
-                <span>{isAdminAuthenticated ? 'Đang Quản Trị' : 'Quản trị viên'}</span>
-              </button>
-            )}
-
             <button
               onClick={scrollToTop}
               className="flex items-center gap-1.5 text-neutral-400 hover:text-[#EE4D2D] transition-colors cursor-pointer"
