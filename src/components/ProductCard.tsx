@@ -16,6 +16,17 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
 
+  const resolvedImageUrl = React.useMemo(() => {
+    if (!product.image) return '';
+    if (product.image.startsWith('http://') || product.image.startsWith('https://')) {
+      return product.image;
+    }
+    const cleanPath = product.image.startsWith('/') ? product.image.slice(1) : product.image;
+    // Vite base url fallback for GitHub Pages or root deployment
+    const baseUrl = (import.meta as unknown as { env?: { BASE_URL?: string } }).env?.BASE_URL || '/';
+    return baseUrl.endsWith('/') ? `${baseUrl}${cleanPath}` : `${baseUrl}/${cleanPath}`;
+  }, [product.image]);
+
   return (
     <article
       id={`product-card-${product.id}`}
@@ -32,7 +43,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           src={
             imageError
               ? 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=800&auto=format&fit=crop'
-              : product.image
+              : resolvedImageUrl
           }
           alt={product.name}
           loading="lazy"
