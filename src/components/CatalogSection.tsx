@@ -25,6 +25,7 @@ export const CatalogSection: React.FC<CatalogSectionProps> = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOption, setSortOption] = useState<SortOption>('default');
+  const [onlyMall, setOnlyMall] = useState(false);
 
   // Compute available subcategories based on the current main category selection
   const availableSubCategories = useMemo<SubCategoryItem[]>(() => {
@@ -64,6 +65,11 @@ export const CatalogSection: React.FC<CatalogSectionProps> = ({
           }
         }
 
+        // Shopee Mall filter
+        if (onlyMall && !p.isMall) {
+          return false;
+        }
+
         // Search query
         if (searchQuery.trim()) {
           const q = searchQuery.toLowerCase().trim();
@@ -83,14 +89,21 @@ export const CatalogSection: React.FC<CatalogSectionProps> = ({
         if (sortOption === 'name-desc') {
           return b.name.localeCompare(a.name, 'vi');
         }
+        // Default: Sắp xếp sản phẩm mới thêm lên đầu (id số cao hơn hoặc xuất hiện sau trong danh sách)
+        const numA = parseInt(a.id.replace(/\D/g, '') || '0', 10);
+        const numB = parseInt(b.id.replace(/\D/g, '') || '0', 10);
+        if (numA !== numB) {
+          return numB - numA;
+        }
         return 0;
       });
-  }, [products, selectedCategory, selectedSubCategory, searchQuery, sortOption]);
+  }, [products, selectedCategory, selectedSubCategory, searchQuery, sortOption, onlyMall]);
 
   const resetAllFilters = () => {
     onSelectCategory('all');
     onSelectSubCategory('all');
     setSearchQuery('');
+    setOnlyMall(false);
   };
 
   return (
@@ -136,8 +149,22 @@ export const CatalogSection: React.FC<CatalogSectionProps> = ({
               )}
             </div>
 
-            {/* Sort options */}
+            {/* Sort and Mall filter options */}
             <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setOnlyMall(!onlyMall)}
+                className={`py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-all cursor-pointer whitespace-nowrap ${
+                  onlyMall
+                    ? 'bg-[#D0011B] text-white shadow-xs'
+                    : 'bg-neutral-50 hover:bg-neutral-100 text-neutral-700 border border-neutral-200'
+                }`}
+                title="Chỉ hiển thị sản phẩm chính hãng Shopee Mall"
+              >
+                <span className={`w-2 h-2 rounded-full ${onlyMall ? 'bg-white animate-pulse' : 'bg-[#D0011B]'}`} />
+                <span>Shopee Mall</span>
+              </button>
+
               <span className="text-xs font-medium text-neutral-500 hidden sm:inline whitespace-nowrap">
                 Sắp xếp:
               </span>
@@ -146,7 +173,7 @@ export const CatalogSection: React.FC<CatalogSectionProps> = ({
                 onChange={(e) => setSortOption(e.target.value as SortOption)}
                 className="py-2.5 px-3 bg-neutral-50 border border-neutral-200 rounded-xl text-xs sm:text-sm font-semibold text-neutral-700 hover:bg-neutral-100 focus:outline-none focus:border-[#EE4D2D] transition-colors cursor-pointer"
               >
-                <option value="default">Thứ tự mặc định</option>
+                <option value="default">Mới thêm gần đây (Mặc định)</option>
                 <option value="name-asc">Tên sản phẩm (A → Z)</option>
                 <option value="name-desc">Tên sản phẩm (Z → A)</option>
               </select>
@@ -258,9 +285,17 @@ export const CatalogSection: React.FC<CatalogSectionProps> = ({
                 </span>
               </>
             )}
+            {onlyMall && (
+              <>
+                <span className="text-neutral-400">•</span>
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#D0011B] text-white font-black text-[11px] uppercase tracking-wider">
+                  Shopee Mall
+                </span>
+              </>
+            )}
           </div>
 
-          {(selectedCategory !== 'all' || selectedSubCategory !== 'all' || searchQuery) && (
+          {(selectedCategory !== 'all' || selectedSubCategory !== 'all' || searchQuery || onlyMall) && (
             <button
               onClick={resetAllFilters}
               className="text-xs text-[#EE4D2D] hover:underline font-bold cursor-pointer whitespace-nowrap ml-2"

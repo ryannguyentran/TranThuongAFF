@@ -17,6 +17,7 @@ import {
   Wrench,
   Package,
   Heart,
+  Briefcase,
   LucideIcon,
   FolderTree,
 } from 'lucide-react';
@@ -50,6 +51,7 @@ const iconMap: Record<string, LucideIcon> = {
   Wrench,
   Package,
   Heart,
+  Briefcase,
 };
 
 export const CategorySection: React.FC<CategorySectionProps> = ({

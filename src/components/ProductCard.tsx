@@ -59,7 +59,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         />
 
         {/* Category Badges on Image (Main and Sub) */}
-        <div className="absolute top-2.5 left-2.5 flex flex-wrap items-center gap-1 z-10 max-w-[90%]">
+        <div className="absolute top-2.5 left-2.5 flex flex-wrap items-center gap-1 z-10 max-w-[70%]">
           {product.mainCategory && (
             <button
               type="button"
@@ -89,13 +89,33 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             </button>
           )}
         </div>
+
+        {/* Shopee Mall Badge on Top-Right */}
+        {product.isMall && (
+          <div className="absolute top-2.5 right-2.5 z-10">
+            <span
+              className="px-2.5 py-1 rounded-lg bg-[#D0011B] text-white text-[11px] font-black tracking-wide uppercase shadow-md flex items-center gap-1 whitespace-nowrap"
+              title="Sản phẩm chính hãng Shopee Mall"
+            >
+              <span>Shopee Mall</span>
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Card Content */}
       <div className="p-4 sm:p-5 flex flex-col flex-1">
         {/* Product Title */}
         <h3 className="font-bold text-neutral-900 text-sm sm:text-base leading-snug line-clamp-2 min-h-[2.5rem] mb-2.5 group-hover:text-[#EE4D2D] transition-colors">
-          {product.name}
+          {product.isMall && (
+            <span
+              className="inline-block align-middle mr-1.5 px-2 py-0.5 rounded bg-[#D0011B] text-white font-black text-[10px] sm:text-[11px] tracking-wide uppercase leading-normal shadow-2xs whitespace-nowrap"
+              title="Shopee Mall"
+            >
+              Shopee Mall
+            </span>
+          )}
+          <span>{product.name}</span>
         </h3>
 
         {/* Note / Ghi chú if available */}
