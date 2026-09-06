@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { PRODUCTS, CATEGORIES } from './data/affiliateData';
+import { PRODUCTS, CATEGORIES, getProductMainCategories } from './data/affiliateData';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { CategorySection } from './components/CategorySection';
@@ -19,15 +19,19 @@ export default function App() {
       all: products.length,
     };
     products.forEach((product) => {
-      if (product.mainCategory) {
-        counts[product.mainCategory] = (counts[product.mainCategory] || 0) + 1;
-      }
+      const mainCats = getProductMainCategories(product);
+      mainCats.forEach((cat) => {
+        // Map to exact category ID if found
+        const matched = categories.find((c) => c.id.toLowerCase() === cat.toLowerCase());
+        const targetId = matched ? matched.id : cat;
+        counts[targetId] = (counts[targetId] || 0) + 1;
+      });
       if (product.category) {
         counts[product.category] = (counts[product.category] || 0) + 1;
       }
     });
     return counts;
-  }, [products]);
+  }, [products, categories]);
 
   const handleSelectCategory = (catId: string) => {
     setSelectedCategory(catId);

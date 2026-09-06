@@ -18,6 +18,7 @@ import {
   Package,
   Heart,
   Briefcase,
+  Monitor,
   LucideIcon,
   FolderTree,
 } from 'lucide-react';
@@ -52,6 +53,7 @@ const iconMap: Record<string, LucideIcon> = {
   Package,
   Heart,
   Briefcase,
+  Monitor,
 };
 
 export const CategorySection: React.FC<CategorySectionProps> = ({

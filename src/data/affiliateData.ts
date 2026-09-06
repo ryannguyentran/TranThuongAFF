@@ -29,13 +29,27 @@ export const SITE_CONFIG: SiteConfig = {
   },
 };
 
+/**
+ * Lấy danh sách Cataloge Chính của sản phẩm (hỗ trợ nhiều Cataloge cách nhau bằng dấu phẩy)
+ */
+export const getProductMainCategories = (product: Product): string[] => {
+  if (product.mainCategories && product.mainCategories.length > 0) {
+    return product.mainCategories;
+  }
+  if (!product.mainCategory) return [];
+  return product.mainCategory
+    .split(',')
+    .map((c) => c.trim())
+    .filter(Boolean);
+};
+
 export const CATEGORIES: CategoryItem[] = [
   {
     id: 'all',
     name: 'Tất cả sản phẩm',
     icon: 'Layers',
     description: 'Tất cả phụ kiện & sản phẩm chọn lọc',
-    count: 22,
+    count: 23,
     subCategories: [
       { id: 'Minio Green - VF2', name: 'Minio Green - VF2', count: 7 },
       { id: 'Feliz', name: 'Feliz', count: 4 },
@@ -50,7 +64,7 @@ export const CATEGORIES: CategoryItem[] = [
     name: 'Xe Hơi - Ô tô',
     icon: 'Car',
     description: 'Phụ kiện & đồ chơi xe hơi ô tô chất lượng',
-    count: 7,
+    count: 8,
     subCategories: [
       { id: 'Minio Green - VF2', name: 'Minio Green - VF2', count: 7 },
     ],
@@ -64,6 +78,14 @@ export const CATEGORIES: CategoryItem[] = [
     subCategories: [
       { id: 'Feliz', name: 'Feliz', count: 4 },
     ],
+  },
+  {
+    id: 'Điện Tử',
+    name: 'Điện Tử',
+    icon: 'Monitor',
+    description: 'Màn hình di động, đồ công nghệ & thiết bị điện tử',
+    count: 1,
+    subCategories: [],
   },
   {
     id: 'Gia Dụng',
@@ -493,6 +515,25 @@ export const PRODUCTS: Product[] = [
     voucherTag: '',
     description: 'Thảm sàn đúc nguyên khối FuHo chính hãng Shopee Mall cao cấp, tràn full bậc cửa cho Minio Green - VF2.',
     note: 'Bác trên Group review là ko hôi như Huvi luôn, ưu điểm là tràn full bậc cửa, và hàng sau cao lên bằng ghế luôn.',
+  },
+  {
+    id: 'prod-23',
+    name: 'Màn Di Động BOE 13.3inch FHD Cảm ứng - viền mỏng - 500 nit sáng đẹp',
+    category: 'Điện Tử, Xe Hơi - Ô tô',
+    mainCategory: 'Điện Tử , Xe Hơi - Ô Tô',
+    mainCategories: ['Điện Tử', 'Xe Hơi - Ô tô'],
+    subCategory: '',
+    image: '/images/manhinhdidong.jpg',
+    originalPrice: 0,
+    salePrice: 0,
+    badge: 'Deal hot',
+    isMall: false,
+    rating: 5.0,
+    soldCount: '',
+    affiliateUrl: 'https://s.shopee.vn/W6RKjQIZ2',
+    voucherTag: '',
+    description: 'Màn di động BOE 13.3 inch FHD cảm ứng cao cấp, viền mỏng, độ sáng 500 nit, tích hợp kickstand tiện dụng cho xe hơi và công việc.',
+    note: 'Màn ok, có kickstand sẵn',
   },
 ];
 

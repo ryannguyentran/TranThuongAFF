@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Search, Sparkles, X, AlertCircle, Layers, Tag, ChevronRight } from 'lucide-react';
 import { Product, CategoryItem, SubCategoryItem } from '../types';
-import { CATEGORIES } from '../data/affiliateData';
+import { CATEGORIES, getProductMainCategories } from '../data/affiliateData';
 import { ProductCard } from './ProductCard';
 
 interface CatalogSectionProps {
@@ -54,7 +54,11 @@ export const CatalogSection: React.FC<CatalogSectionProps> = ({
       .filter((p) => {
         // Main Category filter
         if (selectedCategory !== 'all') {
-          const matchMain = p.mainCategory === selectedCategory || p.category === selectedCategory || p.category?.startsWith(selectedCategory);
+          const mainCats = getProductMainCategories(p);
+          const selCatLower = selectedCategory.toLowerCase();
+          const matchMain =
+            mainCats.some((cat) => cat.toLowerCase() === selCatLower) ||
+            p.category?.toLowerCase().includes(selCatLower);
           if (!matchMain) return false;
         }
 

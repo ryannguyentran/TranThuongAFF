@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ExternalLink, ShieldCheck, ShoppingCart, Tag, ChevronRight } from 'lucide-react';
 import { Product } from '../types';
+import { getProductMainCategories } from '../data/affiliateData';
 
 interface ProductCardProps {
   product: Product;
@@ -15,6 +16,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
+
+  const mainCategories = React.useMemo(() => {
+    return getProductMainCategories(product);
+  }, [product]);
 
   const resolvedImageUrl = React.useMemo(() => {
     if (!product.image) return '';
@@ -60,27 +65,28 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
         {/* Category Badges on Image (Main and Sub) */}
         <div className="absolute top-2.5 left-2.5 flex flex-wrap items-center gap-1 z-10 max-w-[70%]">
-          {product.mainCategory && (
+          {mainCategories.map((cat) => (
             <button
+              key={cat}
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
-                onSelectCategory?.(product.mainCategory);
+                onSelectCategory?.(cat);
               }}
               className="px-2.5 py-1 rounded-lg bg-black/65 backdrop-blur-xs text-white text-[11px] font-semibold flex items-center gap-1 shadow-xs hover:bg-[#EE4D2D] transition-colors cursor-pointer"
-              title="Lọc theo Cataloge Chính"
+              title={`Lọc theo Cataloge: ${cat}`}
             >
               <Tag className="w-3 h-3 text-[#EE4D2D]" />
-              <span>{product.mainCategory}</span>
+              <span>{cat}</span>
             </button>
-          )}
+          ))}
 
           {product.subCategory && (
             <button
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
-                onSelectSubCategory?.(product.subCategory!, product.mainCategory);
+                onSelectSubCategory?.(product.subCategory!, mainCategories[0] || product.mainCategory);
               }}
               className="px-2.5 py-1 rounded-lg bg-[#EE4D2D] text-white text-[11px] font-bold shadow-xs hover:bg-[#d73a1c] transition-colors cursor-pointer flex items-center gap-0.5"
               title="Lọc theo Cataloge Phụ"
