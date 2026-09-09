@@ -43,6 +43,69 @@ export const getProductMainCategories = (product: Product): string[] => {
     .filter(Boolean);
 };
 
+/**
+ * Lấy danh sách ảnh thực tế của sản phẩm (nếu có)
+ */
+export const getProductRealImages = (product: Product): string[] => {
+  if (product.realImages && product.realImages.length > 0) {
+    return product.realImages;
+  }
+  if (product.realImage) {
+    return [product.realImage];
+  }
+  return [];
+};
+
+export interface VideoInfo {
+  type: 'youtube' | 'mp4' | 'photos' | 'external';
+  embedUrl?: string;
+  directUrl: string;
+  label: string;
+}
+
+/**
+ * Phân tích link video (YouTube, MP4, Google Photos)
+ */
+export const getVideoInfo = (url?: string): VideoInfo | null => {
+  if (!url || !url.trim()) return null;
+  const trimmed = url.trim();
+
+  // YouTube match
+  const ytMatch = trimmed.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
+  if (ytMatch && ytMatch[1]) {
+    return {
+      type: 'youtube',
+      embedUrl: `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&rel=0`,
+      directUrl: trimmed,
+      label: 'YouTube',
+    };
+  }
+
+  // Direct MP4 or video files
+  if (/\.(mp4|webm|mov|ogg)(\?.*)?$/i.test(trimmed)) {
+    return {
+      type: 'mp4',
+      directUrl: trimmed,
+      label: 'Video MP4',
+    };
+  }
+
+  // Google Photos
+  if (trimmed.includes('photos.app.goo.gl') || trimmed.includes('photos.google.com')) {
+    return {
+      type: 'photos',
+      directUrl: trimmed,
+      label: 'Google Photos',
+    };
+  }
+
+  return {
+    type: 'external',
+    directUrl: trimmed,
+    label: 'Video',
+  };
+};
+
 export const CATEGORIES: CategoryItem[] = [
   {
     id: 'all',
@@ -130,6 +193,7 @@ export const PRODUCTS: Product[] = [
     mainCategory: 'Xe Hơi - Ô tô',
     subCategory: 'Minio Green - VF2',
     image: '/images/khaynhua.jpg',
+    videoUrl: 'https://photos.app.goo.gl/C2bsSbJ6ZpQSsmvt7',
     originalPrice: 0,
     salePrice: 0,
     badge: 'Deal hot',
@@ -148,6 +212,8 @@ export const PRODUCTS: Product[] = [
     mainCategory: 'Xe Hơi - Ô tô',
     subCategory: 'Minio Green - VF2',
     image: '/images/fmtranmission.jpg',
+    realImage: '/images/essager_thucte.jpg',
+    realImages: ['/images/essager_thucte.jpg'],
     originalPrice: 0,
     salePrice: 0,
     badge: 'Bán chạy',
@@ -166,6 +232,8 @@ export const PRODUCTS: Product[] = [
     mainCategory: 'Xe Hơi - Ô tô',
     subCategory: 'Minio Green - VF2',
     image: '/images/thamhuvivf2.jpg',
+    realImage: '/images/thamhuvi_thucte1.jpg',
+    realImages: ['/images/thamhuvi_thucte1.jpg', '/images/thamhuvi_thucte2.jpg'],
     originalPrice: 0,
     salePrice: 0,
     badge: 'Deal hot',
@@ -454,6 +522,8 @@ export const PRODUCTS: Product[] = [
     mainCategory: 'Xe Hơi - Ô tô',
     subCategory: 'Minio Green - VF2',
     image: '/images/thamhuvimall.jpg',
+    realImage: '/images/thamhuvi_thucte1.jpg',
+    realImages: ['/images/thamhuvi_thucte1.jpg', '/images/thamhuvi_thucte2.jpg'],
     originalPrice: 0,
     salePrice: 0,
     badge: 'Deal hot',
@@ -528,6 +598,7 @@ export const PRODUCTS: Product[] = [
     subCategory: 'Màn Hình',
     image: '/images/manhinhdidong.jpg',
     realImage: '/images/manhinh_thucte.jpg',
+    realImages: ['/images/manhinh_thucte.jpg'],
     originalPrice: 0,
     salePrice: 0,
     badge: 'Deal hot',
@@ -547,6 +618,7 @@ export const PRODUCTS: Product[] = [
     subCategory: 'Minio Green - VF2',
     image: '/images/phanhtay_vf2.jpg',
     realImage: '/images/phanhtay_thucte.jpg',
+    realImages: ['/images/phanhtay_thucte.jpg'],
     originalPrice: 0,
     salePrice: 0,
     badge: 'Deal hot',
@@ -566,6 +638,8 @@ export const PRODUCTS: Product[] = [
     subCategory: 'Minio Green - VF2',
     image: '/images/giadotutinh.jpg',
     realImage: '/images/giado_thucte.jpg',
+    realImages: ['/images/giado_thucte.jpg'],
+    videoUrl: 'https://photos.app.goo.gl/quadDFDNhi3VcRTb9',
     originalPrice: 0,
     salePrice: 0,
     badge: 'Deal hot',

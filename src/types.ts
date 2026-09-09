@@ -9,6 +9,8 @@ export interface Product {
   subCategory?: string;
   image: string;
   realImage?: string;
+  realImages?: string[];
+  videoUrl?: string;
   originalPrice?: number;
   salePrice?: number;
   badge?: DealBadge;

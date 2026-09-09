@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Sparkles, X, AlertCircle, Layers, Tag, ChevronRight, Camera } from 'lucide-react';
+import { Search, Sparkles, X, AlertCircle, Layers, Tag, ChevronRight, Camera, Play } from 'lucide-react';
 import { Product, CategoryItem, SubCategoryItem } from '../types';
-import { CATEGORIES, getProductMainCategories } from '../data/affiliateData';
+import { CATEGORIES, getProductMainCategories, getProductRealImages } from '../data/affiliateData';
 import { ProductCard } from './ProductCard';
 import { ImageLightboxModal } from './ImageLightboxModal';
 
@@ -28,14 +28,20 @@ export const CatalogSection: React.FC<CatalogSectionProps> = ({
   const [sortOption, setSortOption] = useState<SortOption>('default');
   const [onlyMall, setOnlyMall] = useState(false);
   const [onlyRealImage, setOnlyRealImage] = useState(false);
+  const [onlyVideo, setOnlyVideo] = useState(false);
 
   // Lightbox modal state
   const [lightboxProduct, setLightboxProduct] = useState<Product | null>(null);
-  const [lightboxTab, setLightboxTab] = useState<'catalog' | 'real'>('real');
+  const [lightboxTab, setLightboxTab] = useState<'catalog' | 'real' | 'video'>('real');
 
   // Count products with real images
   const realImagesCount = useMemo(() => {
-    return products.filter((p) => Boolean(p.realImage)).length;
+    return products.filter((p) => getProductRealImages(p).length > 0).length;
+  }, [products]);
+
+  // Count products with real videos
+  const videoCount = useMemo(() => {
+    return products.filter((p) => Boolean(p.videoUrl)).length;
   }, [products]);
 
   // Compute available subcategories based on the current main category selection
@@ -86,7 +92,12 @@ export const CatalogSection: React.FC<CatalogSectionProps> = ({
         }
 
         // Real image filter
-        if (onlyRealImage && !p.realImage) {
+        if (onlyRealImage && getProductRealImages(p).length === 0) {
+          return false;
+        }
+
+        // Real video filter
+        if (onlyVideo && !p.videoUrl) {
           return false;
         }
 
@@ -117,7 +128,7 @@ export const CatalogSection: React.FC<CatalogSectionProps> = ({
         }
         return 0;
       });
-  }, [products, selectedCategory, selectedSubCategory, searchQuery, sortOption, onlyMall, onlyRealImage]);
+  }, [products, selectedCategory, selectedSubCategory, searchQuery, sortOption, onlyMall, onlyRealImage, onlyVideo]);
 
   const resetAllFilters = () => {
     onSelectCategory('all');
@@ -125,6 +136,7 @@ export const CatalogSection: React.FC<CatalogSectionProps> = ({
     setSearchQuery('');
     setOnlyMall(false);
     setOnlyRealImage(false);
+    setOnlyVideo(false);
   };
 
   return (
@@ -190,6 +202,27 @@ export const CatalogSection: React.FC<CatalogSectionProps> = ({
                   }`}
                 >
                   {realImagesCount}
+                </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setOnlyVideo(!onlyVideo)}
+                className={`py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-all cursor-pointer whitespace-nowrap ${
+                  onlyVideo
+                    ? 'bg-purple-600 text-white shadow-xs'
+                    : 'bg-neutral-50 hover:bg-neutral-100 text-neutral-700 border border-neutral-200'
+                }`}
+                title="Lọc các sản phẩm có clip video thực tế"
+              >
+                <Play className={`w-3.5 h-3.5 fill-current ${onlyVideo ? 'text-white' : 'text-purple-600'}`} />
+                <span>Video thực tế</span>
+                <span
+                  className={`text-[11px] px-1.5 py-0.2 rounded-full font-extrabold ${
+                    onlyVideo ? 'bg-white/25 text-white' : 'bg-neutral-200/80 text-neutral-700'
+                  }`}
+                >
+                  {videoCount}
                 </span>
               </button>
 
@@ -344,9 +377,18 @@ export const CatalogSection: React.FC<CatalogSectionProps> = ({
                 </span>
               </>
             )}
+            {onlyVideo && (
+              <>
+                <span className="text-neutral-400">•</span>
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-purple-600 text-white font-bold text-[11px]">
+                  <Play className="w-3 h-3 fill-white" />
+                  <span>Có video thực tế ({videoCount})</span>
+                </span>
+              </>
+            )}
           </div>
 
-          {(selectedCategory !== 'all' || selectedSubCategory !== 'all' || searchQuery || onlyMall || onlyRealImage) && (
+          {(selectedCategory !== 'all' || selectedSubCategory !== 'all' || searchQuery || onlyMall || onlyRealImage || onlyVideo) && (
             <button
               onClick={resetAllFilters}
               className="text-xs text-[#EE4D2D] hover:underline font-bold cursor-pointer whitespace-nowrap ml-2"

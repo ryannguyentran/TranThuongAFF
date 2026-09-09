@@ -1,13 +1,24 @@
 import React, { useState } from 'react';
-import { ExternalLink, ShieldCheck, ShoppingCart, Tag, Camera, Image as ImageIcon, Maximize2 } from 'lucide-react';
+import {
+  ExternalLink,
+  ShieldCheck,
+  ShoppingCart,
+  Tag,
+  Camera,
+  Image as ImageIcon,
+  Maximize2,
+  Play,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react';
 import { Product } from '../types';
-import { getProductMainCategories } from '../data/affiliateData';
+import { getProductMainCategories, getProductRealImages } from '../data/affiliateData';
 
 interface ProductCardProps {
   product: Product;
   onSelectCategory?: (catId: string) => void;
   onSelectSubCategory?: (subCatId: string, mainCatId?: string) => void;
-  onOpenLightbox?: (product: Product, tab?: 'catalog' | 'real') => void;
+  onOpenLightbox?: (product: Product, tab?: 'catalog' | 'real' | 'video') => void;
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({
@@ -19,12 +30,23 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [activeTab, setActiveTab] = useState<'catalog' | 'real'>('catalog');
+  const [realImgIndex, setRealImgIndex] = useState(0);
 
   const mainCategories = React.useMemo(() => {
     return getProductMainCategories(product);
   }, [product]);
 
-  const currentDisplayImage = activeTab === 'real' && product.realImage ? product.realImage : product.image;
+  const realImages = React.useMemo(() => {
+    return getProductRealImages(product);
+  }, [product]);
+
+  const hasRealImages = realImages.length > 0;
+  const hasVideo = Boolean(product.videoUrl);
+
+  const currentDisplayImage =
+    activeTab === 'real' && hasRealImages
+      ? realImages[realImgIndex] || realImages[0]
+      : product.image;
 
   const resolvedImageUrl = React.useMemo(() => {
     if (!currentDisplayImage) return '';
@@ -44,6 +66,18 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     setImageError(false);
   };
 
+  const handleNextRealImage = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setRealImgIndex((prev) => (prev < realImages.length - 1 ? prev + 1 : 0));
+    setImageLoaded(false);
+  };
+
+  const handlePrevRealImage = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setRealImgIndex((prev) => (prev > 0 ? prev - 1 : realImages.length - 1));
+    setImageLoaded(false);
+  };
+
   const handleImageClick = () => {
     if (onOpenLightbox) {
       onOpenLightbox(product, activeTab);
@@ -59,7 +93,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       <div
         className="relative aspect-[4/3] sm:aspect-square w-full overflow-hidden bg-neutral-100 cursor-pointer"
         onClick={handleImageClick}
-        title="Nhấp để xem ảnh lớn & chi tiết"
+        title="Nhấp để xem ảnh lớn & video chi tiết"
       >
         {/* Placeholder skeleton before load */}
         {!imageLoaded && !imageError && (
@@ -67,12 +101,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         )}
 
         <img
+          key={resolvedImageUrl}
           src={
             imageError
               ? 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=800&auto=format&fit=crop'
               : resolvedImageUrl
           }
-          alt={`${product.name} - ${activeTab === 'real' ? 'Ảnh thực tế' : 'Ảnh sản phẩm'}`}
+          alt={`${product.name} - ${activeTab === 'real' ? `Ảnh thực tế ${realImgIndex + 1}` : 'Ảnh sản phẩm'}`}
           loading="lazy"
           referrerPolicy="no-referrer"
           onLoad={() => setImageLoaded(true)}
@@ -118,7 +153,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           )}
         </div>
 
-        {/* Top-Right Badges (Shopee Mall + Zoom + Real photo active badge) */}
+        {/* Top-Right Badges (Shopee Mall + Video badge + Zoom) */}
         <div className="absolute top-2.5 right-2.5 z-10 flex flex-col items-end gap-1.5 pointer-events-auto">
           {product.isMall && (
             <span
@@ -129,11 +164,29 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             </span>
           )}
 
-          {/* Real Photo indicator when active */}
-          {product.realImage && activeTab === 'real' && (
+          {/* Video Badge if available */}
+          {hasVideo && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onOpenLightbox?.(product, 'video');
+              }}
+              className="px-2.5 py-1 rounded-lg bg-purple-600/95 hover:bg-purple-700 backdrop-blur-xs text-white text-[11px] font-bold flex items-center gap-1 shadow-md transition-all transform hover:scale-105 cursor-pointer whitespace-nowrap"
+              title="Nhấp để xem video thực tế"
+            >
+              <Play className="w-3 h-3 fill-white" />
+              <span>Video thực tế</span>
+            </button>
+          )}
+
+          {/* Real Photo indicator when in real tab */}
+          {hasRealImages && activeTab === 'real' && (
             <span className="px-2 py-0.5 rounded-lg bg-emerald-600/95 backdrop-blur-xs text-white text-[10px] font-bold flex items-center gap-1 shadow-sm whitespace-nowrap">
               <Camera className="w-3 h-3" />
-              <span>Ảnh thực tế</span>
+              <span>
+                Ảnh thực tế {realImages.length > 1 ? `(${realImgIndex + 1}/${realImages.length})` : ''}
+              </span>
             </span>
           )}
 
@@ -151,16 +204,38 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           </button>
         </div>
 
+        {/* Next/Prev arrow on card when in real image tab and has multiple photos */}
+        {activeTab === 'real' && realImages.length > 1 && (
+          <div className="absolute inset-y-0 inset-x-1.5 flex items-center justify-between pointer-events-none z-15">
+            <button
+              type="button"
+              onClick={handlePrevRealImage}
+              className="p-1.5 rounded-full bg-black/50 hover:bg-black/80 text-white backdrop-blur-xs transition-colors cursor-pointer pointer-events-auto shadow-sm"
+              title="Ảnh trước"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <button
+              type="button"
+              onClick={handleNextRealImage}
+              className="p-1.5 rounded-full bg-black/50 hover:bg-black/80 text-white backdrop-blur-xs transition-colors cursor-pointer pointer-events-auto shadow-sm"
+              title="Ảnh kế tiếp"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+
         {/* Real image vs Catalog Image Tab Switcher at the bottom of the card image */}
-        {product.realImage && (
+        {hasRealImages && (
           <div
-            className="absolute bottom-2.5 left-1/2 -translate-x-1/2 z-20 flex items-center p-1 rounded-full bg-neutral-950/75 backdrop-blur-md border border-white/20 shadow-lg text-[11px] font-semibold text-white pointer-events-auto"
+            className="absolute bottom-2.5 left-1/2 -translate-x-1/2 z-20 flex items-center p-1 rounded-full bg-neutral-950/80 backdrop-blur-md border border-white/20 shadow-lg text-[11px] font-semibold text-white pointer-events-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <button
               type="button"
               onClick={(e) => handleTabSwitch('catalog', e)}
-              className={`px-3 py-1 rounded-full transition-all flex items-center gap-1 cursor-pointer whitespace-nowrap ${
+              className={`px-2.5 sm:px-3 py-1 rounded-full transition-all flex items-center gap-1 cursor-pointer whitespace-nowrap ${
                 activeTab === 'catalog'
                   ? 'bg-white text-neutral-950 shadow-xs font-bold'
                   : 'text-white/75 hover:text-white'
@@ -172,7 +247,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             <button
               type="button"
               onClick={(e) => handleTabSwitch('real', e)}
-              className={`px-3 py-1 rounded-full transition-all flex items-center gap-1 cursor-pointer whitespace-nowrap ${
+              className={`px-2.5 sm:px-3 py-1 rounded-full transition-all flex items-center gap-1 cursor-pointer whitespace-nowrap ${
                 activeTab === 'real'
                   ? 'bg-emerald-600 text-white shadow-xs font-bold'
                   : 'text-white/75 hover:text-white'
@@ -180,6 +255,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             >
               <Camera className="w-3 h-3 text-emerald-300" />
               <span>Ảnh thực tế</span>
+              {realImages.length > 1 && (
+                <span className="text-[10px] opacity-85">({realImages.length})</span>
+              )}
             </button>
           </div>
         )}
@@ -200,19 +278,32 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           <span>{product.name}</span>
         </h3>
 
-        {/* Real photo notice if product has realImage */}
-        {product.realImage && (
-          <div className="mb-2.5 flex items-center justify-between">
-            <button
-              type="button"
-              onClick={() => onOpenLightbox?.(product, 'real')}
-              className="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/80 px-2.5 py-1 rounded-lg transition-colors cursor-pointer"
-              title="Xem ảnh chụp thực tế chi tiết"
-            >
-              <Camera className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Có ảnh chụp thực tế</span>
-              <span className="text-[10px] underline ml-0.5">Xem ngay</span>
-            </button>
+        {/* Real photo & Video tags row */}
+        {(hasRealImages || hasVideo) && (
+          <div className="mb-2.5 flex flex-wrap items-center gap-1.5">
+            {hasRealImages && (
+              <button
+                type="button"
+                onClick={() => onOpenLightbox?.(product, 'real')}
+                className="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/80 px-2 py-0.5 rounded-lg transition-colors cursor-pointer"
+                title="Xem ảnh chụp thực tế chi tiết"
+              >
+                <Camera className="w-3 h-3 text-emerald-600" />
+                <span>Ảnh thực tế ({realImages.length})</span>
+              </button>
+            )}
+
+            {hasVideo && (
+              <button
+                type="button"
+                onClick={() => onOpenLightbox?.(product, 'video')}
+                className="inline-flex items-center gap-1.5 text-[11px] font-bold text-purple-700 bg-purple-50 hover:bg-purple-100 border border-purple-200/80 px-2 py-0.5 rounded-lg transition-colors cursor-pointer"
+                title="Xem video thực tế chi tiết"
+              >
+                <Play className="w-3 h-3 text-purple-600 fill-purple-600" />
+                <span>Xem Video clip</span>
+              </button>
+            )}
           </div>
         )}
 
