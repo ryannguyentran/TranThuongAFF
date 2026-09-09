@@ -307,6 +307,28 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           </div>
         )}
 
+        {/* Ghi chú mã giảm 20% trên YouTube cho sản phẩm có video thực tế */}
+        {hasVideo && (
+          <div
+            onClick={(e) => {
+              e.stopPropagation();
+              onOpenLightbox?.(product, 'video');
+            }}
+            className="mb-3 p-2.5 rounded-xl bg-gradient-to-r from-red-50 to-purple-50 border border-red-200/90 text-[12px] text-neutral-800 flex items-start gap-2 shadow-2xs hover:border-red-300 transition-colors cursor-pointer group/yt"
+            title="Nhấp để xem video thực tế và lấy mã YouTube 20%"
+          >
+            <span className="p-1 rounded-md bg-red-600 text-white shrink-0 mt-0.5 shadow-xs">
+              <Play className="w-3 h-3 fill-white" />
+            </span>
+            <div className="leading-snug">
+              <span className="font-bold text-red-600">Mã giảm giá 20%: </span>
+              <span className="font-medium text-neutral-800">
+                Các bạn có thể click vào Video xem trên youtube để mua cùng mã Youtube 20% nhé
+              </span>
+            </div>
+          </div>
+        )}
+
         {/* Note / Ghi chú if available */}
         {product.note && (
           <div className="mb-3 px-3 py-2 rounded-xl bg-amber-50/90 border border-amber-200/80 text-[12px] text-amber-900 leading-snug flex items-start gap-1.5">

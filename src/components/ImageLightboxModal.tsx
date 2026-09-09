@@ -316,6 +316,17 @@ export const ImageLightboxModal: React.FC<ImageLightboxModalProps> = ({
                       <ExternalLink className="w-3 h-3" />
                     </a>
                   </div>
+
+                  {/* YouTube 20% Voucher Tip Notice */}
+                  <div className="mt-3 max-w-lg px-3.5 py-2 rounded-xl bg-red-950/80 border border-red-500/50 text-left flex items-start gap-2.5 backdrop-blur-xs shadow-md">
+                    <span className="p-1 rounded-md bg-red-600 text-white shrink-0 mt-0.5">
+                      <Play className="w-3 h-3 fill-white" />
+                    </span>
+                    <p className="text-xs text-neutral-100 leading-snug">
+                      <strong className="text-red-400 font-bold">Mẹo nhận mã 20%: </strong>
+                      Các bạn có thể click vào Video xem trên youtube để mua cùng mã Youtube 20% nhé
+                    </p>
+                  </div>
                 </div>
               ) : videoInfo?.type === 'mp4' ? (
                 /* CASE B: MP4 Direct File */
@@ -427,7 +438,18 @@ export const ImageLightboxModal: React.FC<ImageLightboxModalProps> = ({
         {/* Modal Note & Footer Actions */}
         <div className="p-4 sm:p-5 bg-white border-t border-neutral-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
           {/* Note */}
-          <div className="flex-1">
+          <div className="flex-1 flex flex-col gap-2">
+            {product.videoUrl && (
+              <div className="p-2.5 rounded-xl bg-gradient-to-r from-red-50 to-purple-50 border border-red-200/90 text-xs text-neutral-800 flex items-start gap-2 shadow-2xs">
+                <span className="p-1 rounded-md bg-red-600 text-white shrink-0 mt-0.5 shadow-2xs">
+                  <Play className="w-3 h-3 fill-white" />
+                </span>
+                <p className="leading-snug">
+                  <strong className="text-red-600 font-bold">Mã giảm 20%: </strong>
+                  Các bạn có thể click vào Video xem trên youtube để mua cùng mã Youtube 20% nhé
+                </p>
+              </div>
+            )}
             {product.note ? (
               <div className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 flex items-start gap-1.5">
                 <span className="font-bold text-amber-700 shrink-0">💡 Lưu ý:</span>
