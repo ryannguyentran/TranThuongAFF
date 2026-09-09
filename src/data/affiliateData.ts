@@ -61,6 +61,7 @@ export interface VideoInfo {
   embedUrl?: string;
   directUrl: string;
   label: string;
+  isShorts?: boolean;
 }
 
 /**
@@ -70,14 +71,18 @@ export const getVideoInfo = (url?: string): VideoInfo | null => {
   if (!url || !url.trim()) return null;
   const trimmed = url.trim();
 
-  // YouTube match
-  const ytMatch = trimmed.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
+  // YouTube match (including watch, embed, youtu.be, shorts)
+  const ytMatch = trimmed.match(
+    /(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))([\w-]{11})/
+  );
   if (ytMatch && ytMatch[1]) {
+    const isShorts = trimmed.includes('/shorts/');
     return {
       type: 'youtube',
       embedUrl: `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&rel=0`,
       directUrl: trimmed,
-      label: 'YouTube',
+      label: isShorts ? 'YouTube Shorts' : 'YouTube',
+      isShorts,
     };
   }
 
@@ -193,7 +198,7 @@ export const PRODUCTS: Product[] = [
     mainCategory: 'Xe Hơi - Ô tô',
     subCategory: 'Minio Green - VF2',
     image: '/images/khaynhua.jpg',
-    videoUrl: 'https://photos.app.goo.gl/C2bsSbJ6ZpQSsmvt7',
+    videoUrl: 'https://youtube.com/shorts/LswpkMS5LGg?feature=share',
     originalPrice: 0,
     salePrice: 0,
     badge: 'Deal hot',
@@ -639,7 +644,7 @@ export const PRODUCTS: Product[] = [
     image: '/images/giadotutinh.jpg',
     realImage: '/images/giado_thucte.jpg',
     realImages: ['/images/giado_thucte.jpg'],
-    videoUrl: 'https://photos.app.goo.gl/quadDFDNhi3VcRTb9',
+    videoUrl: 'https://youtube.com/shorts/wUfPga2z-Lk',
     originalPrice: 0,
     salePrice: 0,
     badge: 'Deal hot',

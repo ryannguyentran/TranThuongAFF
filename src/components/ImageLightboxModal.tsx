@@ -282,14 +282,40 @@ export const ImageLightboxModal: React.FC<ImageLightboxModalProps> = ({
             <div className="w-full h-full flex flex-col items-center justify-center p-3 text-center">
               {/* CASE A: YouTube Video (Direct Iframe Embed) */}
               {videoInfo?.type === 'youtube' && videoInfo.embedUrl ? (
-                <div className="w-full aspect-video max-h-[52vh] max-w-2xl rounded-xl overflow-hidden shadow-2xl bg-black">
-                  <iframe
-                    src={videoInfo.embedUrl}
-                    title={`${product.name} - Video thực tế`}
-                    className="w-full h-full border-0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  />
+                <div className="flex flex-col items-center justify-center w-full h-full">
+                  <div
+                    className={`relative rounded-2xl overflow-hidden shadow-2xl bg-black border border-neutral-800 ${
+                      videoInfo.isShorts
+                        ? 'w-[280px] sm:w-[320px] max-w-[85vw] aspect-[9/16] max-h-[52vh]'
+                        : 'w-full aspect-video max-h-[52vh] max-w-2xl'
+                    }`}
+                  >
+                    <iframe
+                      src={videoInfo.embedUrl}
+                      title={`${product.name} - Video thực tế`}
+                      className="w-full h-full border-0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                    />
+                  </div>
+
+                  {/* YouTube info & quick link below player */}
+                  <div className="mt-2.5 flex items-center gap-2">
+                    <span className="text-[11px] text-neutral-400 font-medium flex items-center gap-1">
+                      <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse" />
+                      <span>{videoInfo.isShorts ? 'YouTube Shorts' : 'YouTube Video'}</span>
+                    </span>
+                    <span className="text-neutral-600">•</span>
+                    <a
+                      href={videoInfo.directUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[11px] text-purple-400 hover:text-purple-300 font-semibold inline-flex items-center gap-1 hover:underline cursor-pointer"
+                    >
+                      <span>Mở trên YouTube</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  </div>
                 </div>
               ) : videoInfo?.type === 'mp4' ? (
                 /* CASE B: MP4 Direct File */
