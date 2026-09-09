@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ExternalLink, ShieldCheck, ShoppingCart, Tag, ChevronRight } from 'lucide-react';
+import { ExternalLink, ShieldCheck, ShoppingCart, Tag, Camera, Image as ImageIcon, Maximize2 } from 'lucide-react';
 import { Product } from '../types';
 import { getProductMainCategories } from '../data/affiliateData';
 
@@ -7,30 +7,48 @@ interface ProductCardProps {
   product: Product;
   onSelectCategory?: (catId: string) => void;
   onSelectSubCategory?: (subCatId: string, mainCatId?: string) => void;
+  onOpenLightbox?: (product: Product, tab?: 'catalog' | 'real') => void;
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({
   product,
   onSelectCategory,
   onSelectSubCategory,
+  onOpenLightbox,
 }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [activeTab, setActiveTab] = useState<'catalog' | 'real'>('catalog');
 
   const mainCategories = React.useMemo(() => {
     return getProductMainCategories(product);
   }, [product]);
 
+  const currentDisplayImage = activeTab === 'real' && product.realImage ? product.realImage : product.image;
+
   const resolvedImageUrl = React.useMemo(() => {
-    if (!product.image) return '';
-    if (product.image.startsWith('http://') || product.image.startsWith('https://')) {
-      return product.image;
+    if (!currentDisplayImage) return '';
+    if (currentDisplayImage.startsWith('http://') || currentDisplayImage.startsWith('https://')) {
+      return currentDisplayImage;
     }
-    const cleanPath = product.image.startsWith('/') ? product.image.slice(1) : product.image;
+    const cleanPath = currentDisplayImage.startsWith('/') ? currentDisplayImage.slice(1) : currentDisplayImage;
     // Vite base url fallback for GitHub Pages or root deployment
     const baseUrl = (import.meta as unknown as { env?: { BASE_URL?: string } }).env?.BASE_URL || '/';
     return baseUrl.endsWith('/') ? `${baseUrl}${cleanPath}` : `${baseUrl}/${cleanPath}`;
-  }, [product.image]);
+  }, [currentDisplayImage]);
+
+  const handleTabSwitch = (tab: 'catalog' | 'real', e: React.MouseEvent) => {
+    e.stopPropagation();
+    setActiveTab(tab);
+    setImageLoaded(false);
+    setImageError(false);
+  };
+
+  const handleImageClick = () => {
+    if (onOpenLightbox) {
+      onOpenLightbox(product, activeTab);
+    }
+  };
 
   return (
     <article
@@ -38,7 +56,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       className="group relative flex flex-col bg-white rounded-2xl border border-neutral-200/90 overflow-hidden shadow-xs hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 ease-out"
     >
       {/* Top Image Container */}
-      <div className="relative aspect-[4/3] sm:aspect-square w-full overflow-hidden bg-neutral-100">
+      <div
+        className="relative aspect-[4/3] sm:aspect-square w-full overflow-hidden bg-neutral-100 cursor-pointer"
+        onClick={handleImageClick}
+        title="Nhấp để xem ảnh lớn & chi tiết"
+      >
         {/* Placeholder skeleton before load */}
         {!imageLoaded && !imageError && (
           <div className="absolute inset-0 bg-neutral-200 animate-pulse" />
@@ -50,7 +72,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               ? 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=800&auto=format&fit=crop'
               : resolvedImageUrl
           }
-          alt={product.name}
+          alt={`${product.name} - ${activeTab === 'real' ? 'Ảnh thực tế' : 'Ảnh sản phẩm'}`}
           loading="lazy"
           referrerPolicy="no-referrer"
           onLoad={() => setImageLoaded(true)}
@@ -64,7 +86,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         />
 
         {/* Category Badges on Image (Main and Sub) */}
-        <div className="absolute top-2.5 left-2.5 flex flex-wrap items-center gap-1 z-10 max-w-[70%]">
+        <div className="absolute top-2.5 left-2.5 flex flex-wrap items-center gap-1 z-10 max-w-[65%] pointer-events-auto">
           {mainCategories.map((cat) => (
             <button
               key={cat}
@@ -96,15 +118,69 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           )}
         </div>
 
-        {/* Shopee Mall Badge on Top-Right */}
-        {product.isMall && (
-          <div className="absolute top-2.5 right-2.5 z-10">
+        {/* Top-Right Badges (Shopee Mall + Zoom + Real photo active badge) */}
+        <div className="absolute top-2.5 right-2.5 z-10 flex flex-col items-end gap-1.5 pointer-events-auto">
+          {product.isMall && (
             <span
               className="px-2.5 py-1 rounded-lg bg-[#D0011B] text-white text-[11px] font-black tracking-wide uppercase shadow-md flex items-center gap-1 whitespace-nowrap"
               title="Sản phẩm chính hãng Shopee Mall"
             >
               <span>Shopee Mall</span>
             </span>
+          )}
+
+          {/* Real Photo indicator when active */}
+          {product.realImage && activeTab === 'real' && (
+            <span className="px-2 py-0.5 rounded-lg bg-emerald-600/95 backdrop-blur-xs text-white text-[10px] font-bold flex items-center gap-1 shadow-sm whitespace-nowrap">
+              <Camera className="w-3 h-3" />
+              <span>Ảnh thực tế</span>
+            </span>
+          )}
+
+          {/* Quick Zoom Button */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onOpenLightbox?.(product, activeTab);
+            }}
+            className="p-1.5 rounded-lg bg-black/50 hover:bg-black/80 text-white/90 hover:text-white backdrop-blur-xs shadow-xs transition-colors cursor-pointer"
+            title="Xem ảnh phóng to & so sánh"
+          >
+            <Maximize2 className="w-3.5 h-3.5" />
+          </button>
+        </div>
+
+        {/* Real image vs Catalog Image Tab Switcher at the bottom of the card image */}
+        {product.realImage && (
+          <div
+            className="absolute bottom-2.5 left-1/2 -translate-x-1/2 z-20 flex items-center p-1 rounded-full bg-neutral-950/75 backdrop-blur-md border border-white/20 shadow-lg text-[11px] font-semibold text-white pointer-events-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={(e) => handleTabSwitch('catalog', e)}
+              className={`px-3 py-1 rounded-full transition-all flex items-center gap-1 cursor-pointer whitespace-nowrap ${
+                activeTab === 'catalog'
+                  ? 'bg-white text-neutral-950 shadow-xs font-bold'
+                  : 'text-white/75 hover:text-white'
+              }`}
+            >
+              <ImageIcon className="w-3 h-3" />
+              <span>Ảnh mẫu</span>
+            </button>
+            <button
+              type="button"
+              onClick={(e) => handleTabSwitch('real', e)}
+              className={`px-3 py-1 rounded-full transition-all flex items-center gap-1 cursor-pointer whitespace-nowrap ${
+                activeTab === 'real'
+                  ? 'bg-emerald-600 text-white shadow-xs font-bold'
+                  : 'text-white/75 hover:text-white'
+              }`}
+            >
+              <Camera className="w-3 h-3 text-emerald-300" />
+              <span>Ảnh thực tế</span>
+            </button>
           </div>
         )}
       </div>
@@ -112,7 +188,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       {/* Card Content */}
       <div className="p-4 sm:p-5 flex flex-col flex-1">
         {/* Product Title */}
-        <h3 className="font-bold text-neutral-900 text-sm sm:text-base leading-snug line-clamp-2 min-h-[2.5rem] mb-2.5 group-hover:text-[#EE4D2D] transition-colors">
+        <h3 className="font-bold text-neutral-900 text-sm sm:text-base leading-snug line-clamp-2 min-h-[2.5rem] mb-2 group-hover:text-[#EE4D2D] transition-colors">
           {product.isMall && (
             <span
               className="inline-block align-middle mr-1.5 px-2 py-0.5 rounded bg-[#D0011B] text-white font-black text-[10px] sm:text-[11px] tracking-wide uppercase leading-normal shadow-2xs whitespace-nowrap"
@@ -123,6 +199,22 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           )}
           <span>{product.name}</span>
         </h3>
+
+        {/* Real photo notice if product has realImage */}
+        {product.realImage && (
+          <div className="mb-2.5 flex items-center justify-between">
+            <button
+              type="button"
+              onClick={() => onOpenLightbox?.(product, 'real')}
+              className="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/80 px-2.5 py-1 rounded-lg transition-colors cursor-pointer"
+              title="Xem ảnh chụp thực tế chi tiết"
+            >
+              <Camera className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Có ảnh chụp thực tế</span>
+              <span className="text-[10px] underline ml-0.5">Xem ngay</span>
+            </button>
+          </div>
+        )}
 
         {/* Note / Ghi chú if available */}
         {product.note && (

@@ -8,6 +8,7 @@ export interface Product {
   mainCategories?: string[];
   subCategory?: string;
   image: string;
+  realImage?: string;
   originalPrice?: number;
   salePrice?: number;
   badge?: DealBadge;

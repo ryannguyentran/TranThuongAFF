@@ -1,8 +1,9 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Sparkles, X, AlertCircle, Layers, Tag, ChevronRight } from 'lucide-react';
+import { Search, Sparkles, X, AlertCircle, Layers, Tag, ChevronRight, Camera } from 'lucide-react';
 import { Product, CategoryItem, SubCategoryItem } from '../types';
 import { CATEGORIES, getProductMainCategories } from '../data/affiliateData';
 import { ProductCard } from './ProductCard';
+import { ImageLightboxModal } from './ImageLightboxModal';
 
 interface CatalogSectionProps {
   products: Product[];
@@ -26,6 +27,16 @@ export const CatalogSection: React.FC<CatalogSectionProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOption, setSortOption] = useState<SortOption>('default');
   const [onlyMall, setOnlyMall] = useState(false);
+  const [onlyRealImage, setOnlyRealImage] = useState(false);
+
+  // Lightbox modal state
+  const [lightboxProduct, setLightboxProduct] = useState<Product | null>(null);
+  const [lightboxTab, setLightboxTab] = useState<'catalog' | 'real'>('real');
+
+  // Count products with real images
+  const realImagesCount = useMemo(() => {
+    return products.filter((p) => Boolean(p.realImage)).length;
+  }, [products]);
 
   // Compute available subcategories based on the current main category selection
   const availableSubCategories = useMemo<SubCategoryItem[]>(() => {
@@ -74,6 +85,11 @@ export const CatalogSection: React.FC<CatalogSectionProps> = ({
           return false;
         }
 
+        // Real image filter
+        if (onlyRealImage && !p.realImage) {
+          return false;
+        }
+
         // Search query
         if (searchQuery.trim()) {
           const q = searchQuery.toLowerCase().trim();
@@ -101,13 +117,14 @@ export const CatalogSection: React.FC<CatalogSectionProps> = ({
         }
         return 0;
       });
-  }, [products, selectedCategory, selectedSubCategory, searchQuery, sortOption, onlyMall]);
+  }, [products, selectedCategory, selectedSubCategory, searchQuery, sortOption, onlyMall, onlyRealImage]);
 
   const resetAllFilters = () => {
     onSelectCategory('all');
     onSelectSubCategory('all');
     setSearchQuery('');
     setOnlyMall(false);
+    setOnlyRealImage(false);
   };
 
   return (
@@ -154,7 +171,28 @@ export const CatalogSection: React.FC<CatalogSectionProps> = ({
             </div>
 
             {/* Sort and Mall filter options */}
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setOnlyRealImage(!onlyRealImage)}
+                className={`py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-all cursor-pointer whitespace-nowrap ${
+                  onlyRealImage
+                    ? 'bg-emerald-600 text-white shadow-xs'
+                    : 'bg-neutral-50 hover:bg-neutral-100 text-neutral-700 border border-neutral-200'
+                }`}
+                title="Lọc các sản phẩm có ảnh chụp thực tế"
+              >
+                <Camera className={`w-3.5 h-3.5 ${onlyRealImage ? 'text-white' : 'text-emerald-600'}`} />
+                <span>Ảnh thực tế</span>
+                <span
+                  className={`text-[11px] px-1.5 py-0.2 rounded-full font-extrabold ${
+                    onlyRealImage ? 'bg-white/25 text-white' : 'bg-neutral-200/80 text-neutral-700'
+                  }`}
+                >
+                  {realImagesCount}
+                </span>
+              </button>
+
               <button
                 type="button"
                 onClick={() => setOnlyMall(!onlyMall)}
@@ -297,9 +335,18 @@ export const CatalogSection: React.FC<CatalogSectionProps> = ({
                 </span>
               </>
             )}
+            {onlyRealImage && (
+              <>
+                <span className="text-neutral-400">•</span>
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-600 text-white font-bold text-[11px]">
+                  <Camera className="w-3 h-3" />
+                  <span>Có ảnh thực tế ({realImagesCount})</span>
+                </span>
+              </>
+            )}
           </div>
 
-          {(selectedCategory !== 'all' || selectedSubCategory !== 'all' || searchQuery || onlyMall) && (
+          {(selectedCategory !== 'all' || selectedSubCategory !== 'all' || searchQuery || onlyMall || onlyRealImage) && (
             <button
               onClick={resetAllFilters}
               className="text-xs text-[#EE4D2D] hover:underline font-bold cursor-pointer whitespace-nowrap ml-2"
@@ -324,6 +371,10 @@ export const CatalogSection: React.FC<CatalogSectionProps> = ({
                   if (mainCatId) onSelectCategory(mainCatId);
                   onSelectSubCategory(subCatId, mainCatId);
                 }}
+                onOpenLightbox={(prod, tab) => {
+                  setLightboxProduct(prod);
+                  setLightboxTab(tab || 'real');
+                }}
               />
             ))}
           </div>
@@ -346,6 +397,14 @@ export const CatalogSection: React.FC<CatalogSectionProps> = ({
             </button>
           </div>
         )}
+
+        {/* Full Image Lightbox Modal */}
+        <ImageLightboxModal
+          product={lightboxProduct}
+          initialTab={lightboxTab}
+          isOpen={Boolean(lightboxProduct)}
+          onClose={() => setLightboxProduct(null)}
+        />
 
       </div>
     </section>
