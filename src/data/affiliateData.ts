@@ -232,7 +232,7 @@ export const PRODUCTS: Product[] = [
   },
   {
     id: 'prod-3',
-    name: 'Thảm Sàn Huvi + Rối Giá rẻ',
+    name: 'Thảm Sàn HUVI + Rối Giá rẻ',
     category: 'Xe Hơi - Ô tô › Minio Green - VF2',
     mainCategory: 'Xe Hơi - Ô tô',
     subCategory: 'Minio Green - VF2',
@@ -248,7 +248,7 @@ export const PRODUCTS: Product[] = [
     affiliateUrl: 'https://s.shopee.vn/9zxTNHyuwU',
     voucherTag: '',
     description: 'Thảm sàn đúc khuôn chuẩn form xe, kèm rối giữ bụi bẩn cao cấp.',
-    note: '',
+    note: 'Thảm này viền bậc cửa chỉ 1/2 bậc , ghế sau thì lên cỡ 10cm, dày dặn hơn FUMO.',
   },
   {
     id: 'prod-4',
@@ -522,7 +522,7 @@ export const PRODUCTS: Product[] = [
   },
   {
     id: 'prod-19',
-    name: 'Thảm Sàn Huvi Link Shopee Mall',
+    name: 'Thảm Sàn HUVI Link Shopee Mall',
     category: 'Xe Hơi - Ô tô › Minio Green - VF2',
     mainCategory: 'Xe Hơi - Ô tô',
     subCategory: 'Minio Green - VF2',
@@ -537,8 +537,8 @@ export const PRODUCTS: Product[] = [
     soldCount: '',
     affiliateUrl: 'https://s.shopee.vn/60RLdtddHp',
     voucherTag: '',
-    description: 'Thảm sàn đúc nguyên khối Huvi chính hãng Shopee Mall cao cấp dành riêng cho Minio Green - VF2.',
-    note: '',
+    description: 'Thảm sàn đúc nguyên khối HUVI chính hãng Shopee Mall cao cấp dành riêng cho Minio Green - VF2.',
+    note: 'Thảm này viền bậc cửa chỉ 1/2 bậc , ghế sau thì lên cỡ 10cm, dày dặn hơn FUMO.',
   },
   {
     id: 'prod-20',
@@ -560,7 +560,7 @@ export const PRODUCTS: Product[] = [
   },
   {
     id: 'prod-21',
-    name: 'Thảm Sàn FuHo - Giga Auto Giá rẻ hơn mall',
+    name: 'Thảm Sàn FUMO - Giga Auto Giá rẻ hơn mall',
     category: 'Xe Hơi - Ô tô › Minio Green - VF2',
     mainCategory: 'Xe Hơi - Ô tô',
     subCategory: 'Minio Green - VF2',
@@ -581,7 +581,7 @@ export const PRODUCTS: Product[] = [
   },
   {
     id: 'prod-22',
-    name: 'Thảm Sàn FuHo - Link Shopee Mall',
+    name: 'Thảm Sàn FUMO - Link Shopee Mall',
     category: 'Xe Hơi - Ô tô › Minio Green - VF2',
     mainCategory: 'Xe Hơi - Ô tô',
     subCategory: 'Minio Green - VF2',
@@ -597,7 +597,7 @@ export const PRODUCTS: Product[] = [
     soldCount: '',
     affiliateUrl: 'https://s.shopee.vn/80CSBXdNsO',
     voucherTag: '',
-    description: 'Thảm sàn đúc nguyên khối FuHo chính hãng Shopee Mall cao cấp, tràn full bậc cửa cho Minio Green - VF2.',
+    description: 'Thảm sàn đúc nguyên khối FUMO chính hãng Shopee Mall cao cấp, tràn full bậc cửa cho Minio Green - VF2.',
     note: 'Bác trên Group review là ko hôi như Huvi luôn, ưu điểm là tràn full bậc cửa, và hàng sau cao lên bằng ghế luôn.',
   },
   {
