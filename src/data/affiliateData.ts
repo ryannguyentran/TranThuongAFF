@@ -632,7 +632,7 @@ export const PRODUCTS: Product[] = [
     mainCategory: 'Xe Hơi - Ô tô',
     mainCategories: ['Xe Hơi - Ô tô', 'Xe Máy'],
     subCategory: '',
-    image: '/images/bovitalop_yt.jpg',
+    image: '/images/bovitalop.jpg',
     videoUrl: 'https://youtu.be/mKva8DlLdWg',
     originalPrice: 0,
     salePrice: 0,
