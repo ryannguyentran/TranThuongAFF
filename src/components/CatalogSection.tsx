@@ -44,6 +44,11 @@ export const CatalogSection: React.FC<CatalogSectionProps> = ({
     return products.filter((p) => Boolean(p.videoUrl)).length;
   }, [products]);
 
+  // Count products with Shopee Mall link
+  const mallCount = useMemo(() => {
+    return products.filter((p) => Boolean(p.affiliateMallUrl || p.isMall)).length;
+  }, [products]);
+
   // Compute available subcategories based on the current main category selection
   const availableSubCategories = useMemo<SubCategoryItem[]>(() => {
     if (selectedCategory === 'all') {
@@ -87,7 +92,7 @@ export const CatalogSection: React.FC<CatalogSectionProps> = ({
         }
 
         // Shopee Mall filter
-        if (onlyMall && !p.isMall) {
+        if (onlyMall && !p.affiliateMallUrl && !p.isMall) {
           return false;
         }
 
@@ -234,10 +239,17 @@ export const CatalogSection: React.FC<CatalogSectionProps> = ({
                     ? 'bg-[#D0011B] text-white shadow-xs'
                     : 'bg-neutral-50 hover:bg-neutral-100 text-neutral-700 border border-neutral-200'
                 }`}
-                title="Chỉ hiển thị sản phẩm chính hãng Shopee Mall"
+                title="Lọc các sản phẩm có link Shopee Mall chính hãng"
               >
                 <span className={`w-2 h-2 rounded-full ${onlyMall ? 'bg-white animate-pulse' : 'bg-[#D0011B]'}`} />
                 <span>Shopee Mall</span>
+                <span
+                  className={`text-[11px] px-1.5 py-0.2 rounded-full font-extrabold ${
+                    onlyMall ? 'bg-white/25 text-white' : 'bg-neutral-200/80 text-neutral-700'
+                  }`}
+                >
+                  {mallCount}
+                </span>
               </button>
 
               <span className="text-xs font-medium text-neutral-500 hidden sm:inline whitespace-nowrap">

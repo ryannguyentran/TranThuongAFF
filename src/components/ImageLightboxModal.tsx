@@ -462,18 +462,35 @@ export const ImageLightboxModal: React.FC<ImageLightboxModalProps> = ({
             )}
           </div>
 
-          {/* Shopee CTA Button */}
-          <div className="flex items-center gap-2 shrink-0">
-            <a
-              href={product.affiliateUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 py-2.5 px-5 rounded-xl text-sm font-bold text-white bg-[#EE4D2D] hover:bg-[#d73a1c] shadow-md shadow-[#EE4D2D]/20 transition-all cursor-pointer whitespace-nowrap"
-            >
-              <ShoppingCart className="w-4 h-4" />
-              <span>Xem Trên Shopee</span>
-              <ExternalLink className="w-3.5 h-3.5 opacity-90" />
-            </a>
+          {/* Shopee CTA Buttons */}
+          <div className="flex flex-wrap items-center gap-2 shrink-0">
+            {product.affiliateUrl && (
+              <a
+                href={product.affiliateUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold text-white bg-[#EE4D2D] hover:bg-[#d73a1c] shadow-md shadow-[#EE4D2D]/20 transition-all cursor-pointer whitespace-nowrap"
+                title="Mở gian hàng thường trên Shopee"
+              >
+                <ShoppingCart className="w-4 h-4" />
+                <span>Xem Trên Shopee</span>
+                <ExternalLink className="w-3.5 h-3.5 opacity-90" />
+              </a>
+            )}
+
+            {product.affiliateMallUrl && (
+              <a
+                href={product.affiliateMallUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold text-white bg-[#D0011B] hover:bg-[#b00116] shadow-md shadow-[#D0011B]/20 transition-all cursor-pointer whitespace-nowrap"
+                title="Mở gian hàng chính hãng Shopee Mall"
+              >
+                <span className="px-1.5 py-0.5 rounded bg-white text-[#D0011B] text-[10px] font-black tracking-wider leading-none">MALL</span>
+                <span>Xem Trên Shopee Mall</span>
+                <ExternalLink className="w-3.5 h-3.5 opacity-90" />
+              </a>
+            )}
           </div>
         </div>
       </div>

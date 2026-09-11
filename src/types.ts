@@ -18,6 +18,7 @@ export interface Product {
   rating?: number;
   soldCount?: string;
   affiliateUrl: string;
+  affiliateMallUrl?: string;
   voucherTag?: string;
   description?: string;
   note?: string;

@@ -155,10 +155,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
         {/* Top-Right Badges (Shopee Mall + Video badge + Zoom) */}
         <div className="absolute top-2.5 right-2.5 z-10 flex flex-col items-end gap-1.5 pointer-events-auto">
-          {product.isMall && (
+          {(product.isMall || Boolean(product.affiliateMallUrl)) && (
             <span
               className="px-2.5 py-1 rounded-lg bg-[#D0011B] text-white text-[11px] font-black tracking-wide uppercase shadow-md flex items-center gap-1 whitespace-nowrap"
-              title="Sản phẩm chính hãng Shopee Mall"
+              title="Có link gian hàng chính hãng Shopee Mall"
             >
               <span>Shopee Mall</span>
             </span>
@@ -346,17 +346,63 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
         {/* Prominent CTA Button and link notice */}
         <div className="mt-auto pt-3 border-t border-neutral-100 flex flex-col gap-2">
-          <a
-            href={product.affiliateUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            id={`buy-btn-${product.id}`}
-            className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-sm sm:text-base font-bold text-white bg-[#EE4D2D] hover:bg-[#d73a1c] active:bg-[#c03014] shadow-md shadow-[#EE4D2D]/20 hover:shadow-lg hover:shadow-[#EE4D2D]/30 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#EE4D2D] focus:ring-offset-2"
-          >
-            <ShoppingCart className="w-4 h-4" />
-            <span>Xem Trên Shopee</span>
-            <ExternalLink className="w-4 h-4 opacity-90" />
-          </a>
+          {product.affiliateUrl && product.affiliateMallUrl ? (
+            /* Có cả 2 link: hiển thị 2 nút với 2 tông màu cam / đỏ đặc trưng */
+            <div className="flex flex-col gap-2">
+              <a
+                href={product.affiliateUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                id={`buy-shopee-${product.id}`}
+                className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-3.5 rounded-xl text-xs sm:text-sm font-bold text-white bg-[#EE4D2D] hover:bg-[#d73a1c] active:bg-[#c03014] shadow-sm shadow-[#EE4D2D]/20 hover:shadow-md transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#EE4D2D] focus:ring-offset-1"
+                title="Mở gian hàng thường trên Shopee"
+              >
+                <ShoppingCart className="w-4 h-4" />
+                <span>Xem Trên Shopee</span>
+                <ExternalLink className="w-3.5 h-3.5 opacity-90" />
+              </a>
+
+              <a
+                href={product.affiliateMallUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                id={`buy-mall-${product.id}`}
+                className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-3.5 rounded-xl text-xs sm:text-sm font-bold text-white bg-[#D0011B] hover:bg-[#b00116] active:bg-[#9a0013] shadow-sm shadow-[#D0011B]/20 hover:shadow-md transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#D0011B] focus:ring-offset-1"
+                title="Mở gian hàng chính hãng Shopee Mall"
+              >
+                <span className="px-1.5 py-0.5 rounded bg-white text-[#D0011B] text-[10px] font-black tracking-wider leading-none">MALL</span>
+                <span>Xem Trên Shopee Mall</span>
+                <ExternalLink className="w-3.5 h-3.5 opacity-90" />
+              </a>
+            </div>
+          ) : product.affiliateMallUrl ? (
+            /* Chỉ có Link Mall */
+            <a
+              href={product.affiliateMallUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              id={`buy-btn-${product.id}`}
+              className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-sm sm:text-base font-bold text-white bg-[#D0011B] hover:bg-[#b00116] active:bg-[#9a0013] shadow-md shadow-[#D0011B]/20 hover:shadow-lg transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#D0011B] focus:ring-offset-2"
+            >
+              <span className="px-1.5 py-0.5 rounded bg-white text-[#D0011B] text-[10px] font-black tracking-wider leading-none">MALL</span>
+              <span>Xem Trên Shopee Mall</span>
+              <ExternalLink className="w-4 h-4 opacity-90" />
+            </a>
+          ) : (
+            /* Chỉ có Link Shopee thường */
+            <a
+              href={product.affiliateUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              id={`buy-btn-${product.id}`}
+              className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-sm sm:text-base font-bold text-white bg-[#EE4D2D] hover:bg-[#d73a1c] active:bg-[#c03014] shadow-md shadow-[#EE4D2D]/20 hover:shadow-lg hover:shadow-[#EE4D2D]/30 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#EE4D2D] focus:ring-offset-2"
+            >
+              <ShoppingCart className="w-4 h-4" />
+              <span>Xem Trên Shopee</span>
+              <ExternalLink className="w-4 h-4 opacity-90" />
+            </a>
+          )}
+
           <p className="text-[11px] text-neutral-500 text-center flex items-center justify-center gap-1">
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
             <span>Mở trực tiếp link sản phẩm trên Shopee</span>
