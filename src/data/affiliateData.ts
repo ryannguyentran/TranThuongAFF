@@ -229,7 +229,7 @@ export const PRODUCTS: Product[] = [
     affiliateUrl: 'https://s.shopee.vn/9V1CmCdqLU',
     voucherTag: '',
     description: 'Bộ tẩu sạc kiêm truyền phát âm thanh Bluetooth qua sóng FM 5.3.',
-    note: 'Tác dụng chuyển tần số FM thành BT',
+    note: 'Tác dụng chuyển tần số FM thành BT , Mình có Post Clip Hướng Dẫn cho Anh Em ko biết cách sử dụng nghen.',
   },
   {
     id: 'prod-3',
