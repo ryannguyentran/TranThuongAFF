@@ -219,6 +219,7 @@ export const PRODUCTS: Product[] = [
     image: '/images/fmtranmission.jpg',
     realImage: '/images/essager_thucte.jpg',
     realImages: ['/images/essager_thucte.jpg'],
+    videoUrl: 'https://youtube.com/shorts/tJh8sMMaKtg?feature=share',
     originalPrice: 0,
     salePrice: 0,
     badge: 'Bán chạy',
