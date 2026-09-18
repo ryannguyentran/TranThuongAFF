@@ -1,6 +1,7 @@
 import React from 'react';
 import { ShieldCheck, Sparkles, CheckCircle2, TrendingUp, Zap, HeartHandshake } from 'lucide-react';
 import { SITE_CONFIG } from '../data/affiliateData';
+import { YouTubeVoucherBanner } from './YouTubeVoucherBanner';
 
 interface HeroProps {
   totalDealsCount: number;
@@ -19,16 +20,22 @@ export const Hero: React.FC<HeroProps> = ({ totalDealsCount }) => {
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
         </div>
 
-        {/* Slogan / Chia sẻ từ chủ trang */}
-        <div className="max-w-3xl mx-auto mb-5 bg-white border border-amber-200/80 rounded-2xl p-4 sm:p-5 shadow-xs">
-          <div className="flex items-start sm:items-center gap-3 text-left sm:text-center justify-center">
-            <div className="w-9 h-9 rounded-xl bg-amber-50 border border-amber-200 text-amber-600 flex items-center justify-center shrink-0">
-              <HeartHandshake className="w-5 h-5" />
+        {/* 2 Cột bên cạnh nhau: Chia sẻ từ chủ trang & Khung giờ mã YouTube */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-3.5 max-w-5xl mx-auto mb-5 text-left items-stretch">
+          {/* Cột 1: Slogan / Chia sẻ từ chủ trang */}
+          <div className="bg-white border border-amber-200/80 rounded-2xl p-3.5 sm:p-4 shadow-xs flex flex-col justify-center">
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-xl bg-amber-50 border border-amber-200 text-amber-600 flex items-center justify-center shrink-0 mt-0.5">
+                <HeartHandshake className="w-4.5 h-4.5" />
+              </div>
+              <p className="text-xs sm:text-sm font-medium text-neutral-800 leading-relaxed">
+                "{SITE_CONFIG.slogan}"
+              </p>
             </div>
-            <p className="text-xs sm:text-sm md:text-base font-medium text-neutral-800 leading-relaxed">
-              "{SITE_CONFIG.slogan}"
-            </p>
           </div>
+
+          {/* Cột 2: Banner giờ có lại mã YouTube (gọn gàng, kèm logo YouTube) */}
+          <YouTubeVoucherBanner />
         </div>
 
         {/* Quick Trust Highlights */}

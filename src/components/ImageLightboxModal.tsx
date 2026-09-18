@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { Product } from '../types';
 import { getProductRealImages, getVideoInfo } from '../data/affiliateData';
+import { YouTubeVoucherBanner } from './YouTubeVoucherBanner';
 
 interface ImageLightboxModalProps {
   product: Product | null;
@@ -326,6 +327,11 @@ export const ImageLightboxModal: React.FC<ImageLightboxModalProps> = ({
                       <strong className="text-red-400 font-bold">Mẹo nhận mã 20%: </strong>
                       Các bạn có thể click vào Video xem trên youtube để mua cùng mã Youtube 20% nhé
                     </p>
+                  </div>
+
+                  {/* Banner Giờ Có Lại Mã YouTube */}
+                  <div className="mt-2.5 w-full max-w-lg">
+                    <YouTubeVoucherBanner className="text-left" />
                   </div>
                 </div>
               ) : videoInfo?.type === 'mp4' ? (
